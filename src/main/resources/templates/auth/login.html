@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/auth-layout :: layout(~{:: #loginForm})}">
+
+<body>
+
+<div id="loginForm">
+    <h3 class="card-title text-center mb-4">Đăng Nhập</h3>
+
+    <div class="alert alert-danger" th:if="${param.error}"> Tài khoản hoặc mật khẩu sai! </div>
+    <div class="alert alert-success" th:if="${param.success}"> Đăng ký thành công! Hãy đăng nhập. </div>
+    <div class="alert alert-info" th:if="${param.logout}"> Bạn đã đăng xuất. </div>
+
+    <form th:action="@{/login}" method="POST">
+        <div class="mb-3">
+            <label class="form-label">Tên đăng nhập</label>
+            <input type="text" name="username" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Mật khẩu</label>
+            <input type="password" name="password" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Đăng Nhập</button>
+    </form>
+
+    <div class="mb-3 text-end">
+        <a th:href="@{/forgot-password}" class="text-decoration-none small">Quên mật khẩu?</a>
+    </div>
+    <p class="text-center mt-3 mb-0">
+        Chưa có tài khoản? <a th:href="@{/auth/register}">Đăng ký ngay</a>
+    </p>
+</div>
+
+</body>
+</html>

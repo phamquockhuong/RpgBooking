@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/auth-layout :: layout(~{:: #registerForm})}">
+
+<body>
+
+<div id="registerForm">
+    <h3 class="card-title text-center mb-4">Đăng Ký Tài Khoản</h3>
+
+    <form th:action="@{/auth/register}" method="POST">
+        <div class="mb-3">
+            <label class="form-label">Tên đăng nhập</label>
+            <input type="text" name="username" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" name="email" class="form-control" required placeholder="name@example.com">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Mật khẩu</label>
+            <input type="password" name="password" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Tạo Tài Khoản</button>
+    </form>
+
+    <p class="text-center mt-3 mb-0">
+        Đã có tài khoản? <a th:href="@{/login}">Đăng nhập</a>
+    </p>
+</div>
+
+</body>
+</html>

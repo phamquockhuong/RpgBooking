@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/admin-layout :: layout(~{:: #content})}">
+<body>
+<div id="content">
+    <!--begin::Container-->
+    <div class="container-fluid">
+        <div class="app-content-header">
+            <!--begin::Row-->
+            <div class="row">
+                <div class="col-sm-6">
+                    <h3 class="mb-0">Chỉnh sửa danh mục</h3>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-end">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Chỉnh sửa danh mục</li>
+                    </ol>
+                </div>
+            </div>
+            <!--end::Row-->
+        </div>
+        <!--end::Container-->
+
+        <div class="app-content">
+            <form th:action="@{/admin/categories/edit}" th:object="${category}" method="POST">
+                <input type="hidden" th:field="*{id}" />
+
+                <div class="mb-3">
+                    <label>Tên danh mục:</label>
+                    <input type="text" th:field="*{name}" class="form-control" required>
+                </div>
+
+                <button type="submit" class="btn btn-success">Lưu thay đổi</button>
+                <a th:href="@{/admin/categories}" class="btn btn-secondary">Hủy</a>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

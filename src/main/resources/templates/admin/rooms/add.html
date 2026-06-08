@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/admin-layout :: layout(~{:: #content})}">
+<body>
+<div id="content">
+    <!--begin::Container-->
+    <div class="container-fluid">
+        <div class="app-content-header">
+            <!--begin::Row-->
+            <div class="row">
+                <div class="col-sm-6">
+                    <h3 class="mb-0">Thêm trò chơi</h3>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-end">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Thêm trò chơi</li>
+                    </ol>
+                </div>
+            </div>
+            <!--end::Row-->
+        </div>
+        <!--end::Container-->
+
+        <div class="app-content">
+            <form th:action="@{/admin/rooms/add}" th:object="${room}" method="POST" enctype="multipart/form-data">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label>Tên phòng <span class="text-danger">*</span></label>
+                        <input type="text" th:field="*{name}" class="form-control" required />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label>Danh mục <span class="text-danger">*</span></label>
+                        <select th:field="*{category.id}" class="form-select" required>
+                            <option value="">Chọn danh mục...</option>
+                            <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label>Min người chơi <span class="text-danger">*</span></label>
+                        <input type="number" step="1" min="1" th:field="*{minPlayers}" class="form-control" required />
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label>Max người chơi <span class="text-danger">*</span></label>
+                        <input type="number" step="1" min="1" th:field="*{maxPlayers}" class="form-control" required />
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label>Giá người lớn <span class="text-danger">*</span></label>
+                        <input type="number" step="1" min="1" th:field="*{priceAdult}" class="form-control" required />
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label>Giá trẻ em <span class="text-danger">*</span></label>
+                        <input type="number" step="1" min="1" th:field="*{priceKid}" class="form-control" required />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="col-md-12 mb-3">
+                            <label>Thời gian (phút) <span class="text-danger">*</span></label>
+                            <input type="number" step="1" min="1" th:field="*{duration}" class="form-control" required />
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label>Chọn ảnh đại diện: <span class="text-danger">*</span></label>
+                            <input type="file" name="imageFile" class="form-control" required accept="image/*" />
+                            <small class="text-muted">Định dạng hỗ trợ: JPG, PNG. Dung lượng tối đa: 5MB.</small>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label>Mô tả <span class="text-danger">*</span></label>
+                        <textarea th:field="*{description}" class="form-control" rows="4"></textarea>
+                    </div>
+                </div>
+                <div class="mb-3" style="text-align: right">
+                    <a th:href="@{/admin/rooms}" class="btn btn-secondary px-3">Quay lại</a>
+                    <button type="submit" class="btn btn-primary">Thêm mới</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/admin-layout :: layout(~{:: #content})}">
+<body>
+<div id="content">
+    <!--begin::Container-->
+    <div class="container-fluid">
+        <div class="app-content-header">
+            <!--begin::Row-->
+            <div class="row">
+                <div class="col-sm-6">
+                    <h3 class="mb-0">Chỉnh sửa trò chơi</h3>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-end">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Chỉnh sửa trò chơi</li>
+                    </ol>
+                </div>
+            </div>
+            <!--end::Row-->
+        </div>
+        <!--end::Container-->
+
+        <div class="app-content">
+            <form th:action="@{/admin/rooms/edit/{id}(id=${room.id})}" th:object="${room}" method="POST" enctype="multipart/form-data">
+
+                <input type="hidden" th:field="*{id}" />
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Tên phòng <span class="text-danger">*</span></label>
+                        <input type="text" th:field="*{name}" class="form-control"
+                               th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'" required />
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Danh mục <span class="text-danger">*</span></label>
+                        <select th:field="*{category.id}" class="form-select" required>
+                            <option value="" disabled>-- Chọn danh mục --</option>
+                            <option th:each="c : ${categories}"
+                                    th:value="${c.id}"
+                                    th:text="${c.name}"></option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Min người chơi <span class="text-danger">*</span></label>
+                        <input type="number" step="1" min="1" th:field="*{minPlayers}" class="form-control" required />
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Max người chơi <span class="text-danger">*</span></label>
+                        <input type="number" step="1" min="1" th:field="*{maxPlayers}" class="form-control" required />
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Giá người lớn <span class="text-danger">*</span></label>
+                        <input type="number" step="1" min="1" th:field="*{priceAdult}" class="form-control" required />
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Giá trẻ em<span class="text-danger">*</span></label>
+                        <input type="number" step="1" min="1" th:field="*{priceKid}" class="form-control" required />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Thời gian (phút) <span class="text-danger">*</span></label>
+                            <input type="number" step="1" min="1" th:field="*{duration}" class="form-control" required />
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            <label>Đổi ảnh (để trống nếu giữ ảnh cũ): <span class="text-danger">*</span></label>
+                            <input type="file" name="imageFile" class="form-control" accept="image/*" />
+                            <small class="text-muted">Định dạng hỗ trợ: JPG, PNG. Dung lượng tối đa: 5MB.</small>
+
+                            <div class="mt-2">
+                                <p>Ảnh hiện tại:</p>
+                                <img th:src="${room.imageUrl}" style="width: 150px;" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Mô tả phòng <span class="text-danger">*</span></label>
+                        <textarea th:field="*{description}" class="form-control" rows="4" required></textarea>
+                    </div>
+                </div>
+
+                <div class="mt-3" style="text-align: right">
+                    <a th:href="@{/admin/rooms}" class="btn btn-secondary px-3">Quay lại</a>
+                    <button type="submit" class="btn btn-warning px-4">Cập nhật thông tin</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

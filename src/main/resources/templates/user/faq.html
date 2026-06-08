@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/user-layout :: layout(~{:: #boxFAQ})}">
+
+<body>
+
+<div id="boxFAQ">
+
+    <h2 class="text-center my-5 fw-bold">Câu hỏi thường gặp</h2>
+    <div class="accordion accordion-flush rounded" id="faqAccordion">
+        <!-- Câu hỏi 1 -->
+        <div class="accordion-item bg-custom-card border-secondary">
+            <h2 class="accordion-header">
+                <button class="accordion-button bg-custom-card text-white" type="button" data-bs-toggle="collapse" data-bs-target="#q1">
+                    Độ tuổi nào phù hợp để tham gia?
+                </button>
+            </h2>
+            <div id="q1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                <div class="accordion-body text-white">Người chơi dưới 16 tuổi cần có người giám hộ đi kèm. Trò chơi đòi hỏi khả năng tư duy logic nên khuyến khích người chơi từ 12 tuổi trở lên.</div>
+            </div>
+        </div>
+        <!-- Câu hỏi 2 -->
+        <div class="accordion-item bg-custom-card border-secondary">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed bg-custom-card text-white" type="button" data-bs-toggle="collapse" data-bs-target="#q2">
+                    Tôi cần chuẩn bị gì trước khi đến?
+                </button>
+            </h2>
+            <div id="q2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                <div class="accordion-body text-white">Bạn nên có mặt trước giờ bắt đầu 15 phút để được nghe hướng dẫn (briefing) và gửi đồ cá nhân vào tủ bảo quản.</div>
+            </div>
+        </div>
+
+        <div class="accordion-item bg-custom-card border-secondary">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed bg-custom-card text-white" type="button" data-bs-toggle="collapse" data-bs-target="#q3">
+                    Làm sao để tôi thay đổi lịch đã đặt?
+                </button>
+            </h2>
+            <div id="q3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                <div class="accordion-body text-white">Bạn có thể thay đổi lịch trước ít nhất 24 giờ. Vui lòng liên hệ hotline hoặc gửi email cho chúng tôi kèm theo mã đặt phòng để được hỗ trợ chuyển đổi miễn phí.</div>
+            </div>
+        </div>
+
+        <div class="accordion-item bg-custom-card border-secondary">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed bg-custom-card text-white" type="button" data-bs-toggle="collapse" data-bs-target="#q4">
+                    Phương thức thanh toán nào được chấp nhận?
+                </button>
+            </h2>
+            <div id="q4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                <div class="accordion-body text-white">Chúng tôi chấp nhận thanh toán qua chuyển khoản ngân hàng, ví điện tử (Momo, VNPay) hoặc thanh toán trực tiếp bằng tiền mặt tại quầy khi đến chơi.</div>
+            </div>
+        </div>
+
+        <div class="accordion-item bg-custom-card border-secondary">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed bg-custom-card text-white" type="button" data-bs-toggle="collapse" data-bs-target="#q5">
+                    Trò chơi có quá đáng sợ hoặc gây ngột ngạt không?
+                </button>
+            </h2>
+            <div id="q5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                <div class="accordion-body text-white">Tất cả các phòng đều được thiết kế với hệ thống thông gió đạt chuẩn. Nếu bạn cảm thấy không thoải mái, mỗi phòng đều có nút khẩn cấp để mở cửa ngay lập tức và nhân viên sẽ hỗ trợ bạn trong vòng vài giây.</div>
+            </div>
+        </div>
+
+        <div class="accordion-item bg-custom-card border-secondary">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed bg-custom-card text-white" type="button" data-bs-toggle="collapse" data-bs-target="#q6">
+                    Tôi có thể chơi ghép cùng nhóm khác không?
+                </button>
+            </h2>
+            <div id="q6" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                <div class="accordion-body text-white">Thông thường các phòng được thiết kế cho sự riêng tư của nhóm bạn. Tuy nhiên, với các sự kiện Team Building, chúng tôi có thể sắp xếp các nhóm ghép theo yêu cầu. Hãy liên hệ với chúng tôi để được tư vấn chi tiết.</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/user-layout :: layout(~{:: #boxBookingDetail})}">
+
+<body>
+
+<div id="boxBookingDetail">
+
+    <div class="row g-5 my-5">
+
+        <div class="col-md-5">
+            <h2 class="fw-bold mb-4">Liên hệ với chúng tôi</h2>
+            <p>Đội ngũ hỗ trợ của GameZone luôn sẵn sàng giải đáp thắc mắc của bạn qua email hoặc hotline trong giờ hành chính.</p>
+            <ul class="list-unstyled mt-4">
+                <li class="mb-3">📍 Địa chỉ: 123 Đường ABC, Hà Nội</li>
+                <li class="mb-3">📞 Hotline: +84 123 456 789</li>
+                <li>✉️ Email: support@gamezone.com</li>
+            </ul>
+        </div>
+        <div class="col-md-7">
+            <form class="bg-custom-card p-4 rounded shadow">
+                <div class="mb-3">
+                    <label class="form-label">Họ và tên</label>
+                    <input type="text" class="form-control bg-dark text-white border-secondary">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control bg-dark text-white border-secondary">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Nội dung hỗ trợ</label>
+                    <textarea class="form-control bg-dark text-white border-secondary" rows="4"></textarea>
+                </div>
+                <button type="submit" class="btn btn-info w-100 fw-bold">GỬI YÊU CẦU</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
