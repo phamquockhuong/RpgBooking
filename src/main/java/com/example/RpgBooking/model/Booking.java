@@ -2,57 +2,52 @@ package com.example.RpgBooking.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
 @Data
-@Table(
-    name = "booking",
-    uniqueConstraints = {
-        @UniqueConstraint(
-            name = "uc_booking_room_time_status",
-            columnNames = {"start_time", "end_time", "status", "room_id", "booking_date"}
-        )
-    }
-)
+@Table(name = "booking")
 public class Booking {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
-
-    @Column(name = "booking_date", nullable = false)
     private LocalDate bookingDate;
+
+    private LocalTime startTime;
+    private LocalTime endTime;
+
+    @Column(nullable = false)
+    private int numAdult;
+
+    @Column(nullable = false)
+    private int numKid;
 
     private double totalPrice;
     private double discountPrice;
     private double gst;
 
-    @Column(nullable = false)
-    @ColumnDefault("'CREATED'")
-    private String status = "CREATED"; // CREATED / PENDING / CONFIRMED / CANCELLED
+    @Enumerated(EnumType.STRING)
+    private BookingStatus status = BookingStatus.CREATED;
 
-    @Column(name = "payment_status")
-    private String paymentStatus;
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus paymentStatus;
 
-    @Column(name = "payment_token")
     private String paymentToken;
 
     @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    private LocalDateTime expiresAt;
+
     @ManyToOne
-    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "room_id")
     private Room room;
 }

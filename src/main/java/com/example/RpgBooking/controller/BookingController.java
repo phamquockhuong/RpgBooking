@@ -1,6 +1,8 @@
 package com.example.RpgBooking.controller;
 
 import com.example.RpgBooking.dto.BookingRequest;
+import com.example.RpgBooking.dto.PaymentSummary;
+import com.example.RpgBooking.model.Booking;
 import com.example.RpgBooking.model.Room;
 import com.example.RpgBooking.service.*;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,8 @@ public class BookingController {
 
     private final RoomService roomService;
     private final CategoryService categoryService;
+    private final BookingService bookingService;
+    private final PaymentService paymentService;
 
     @GetMapping("/")
     public String bookingsPage(
@@ -49,5 +53,35 @@ public class BookingController {
         } catch (RuntimeException e) {
             return "redirect:/";
         }
+    }
+
+    @PostMapping("/booking/create")
+    public String create(BookingRequest req) {
+
+        Booking booking = bookingService.createPendingBooking(req);
+
+        return "redirect:/booking/" + booking.getId() + "/payment";
+    }
+
+    @GetMapping("/booking/{id}/payment")
+    public String payment(@PathVariable Long id,
+                          @RequestParam(required = false) String voucher,
+                          Model model) {
+
+        PaymentSummary summary = paymentService.calculate(id, voucher);
+
+        model.addAttribute("summary", summary);
+        model.addAttribute("booking", bookingService.getById(id));
+
+        return "user/payment";
+    }
+
+    @PostMapping("/booking/confirm")
+    public String confirm(@RequestParam Long bookingId,
+                          @RequestParam(required = false) String voucherCode) {
+
+        paymentService.pay(bookingId, voucherCode);
+
+        return "redirect:/booking/success";
     }
 }

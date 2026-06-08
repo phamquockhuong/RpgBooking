@@ -3,4 +3,8 @@ package com.example.RpgBooking.repository;
 import com.example.RpgBooking.model.Coupon;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface CouponRepository extends JpaRepository<Coupon, Long> {}
+import java.util.Optional;
+
+public interface CouponRepository extends JpaRepository<Coupon, Long> {
+    Optional<Coupon> findByCode(String code);
+}

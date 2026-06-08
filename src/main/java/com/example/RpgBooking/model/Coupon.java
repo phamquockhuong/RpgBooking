@@ -15,24 +15,11 @@ public class Coupon {
 
     @Column(unique = true, nullable = false)
     private String code;
-
     private String discountType;
-
     private double discountValue;
-
-    @Column(name = "start_time", nullable = false)
-    private LocalDateTime startTime;
-
-    @Column(name = "end_time", nullable = false)
-    private LocalDateTime endTime;
-
-    @Column(name = "validity_start_date", nullable = false)
-    private LocalDateTime validityStartDate;
-
-    @Column(name = "validity_end_date", nullable = false)
-    private LocalDateTime validityEndDate;
-
-    private boolean active;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
+    private boolean active = true;
 
     @ManyToOne
     private User user;
