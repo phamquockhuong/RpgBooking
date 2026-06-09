@@ -11,13 +11,16 @@
         <div class="col-md-5">
 
             <div class="card p-4 bg-custom-card text-white">
-                <h4>Thông tin booking</h4>
+                <h4 class="mb-4">Thông tin booking</h4>
 
                 <p>Phòng: <strong th:text="${booking.room.name}"></strong></p>
                 <p>Ngày: <strong th:text="${booking.bookingDate}"></strong></p>
-                <p>Giờ: <strong th:text="${booking.startTime}"></strong></p>
-                <p>Người lớn: <strong th:text="${booking.numAdult}"></strong></p>
-                <p>Trẻ em: <strong th:text="${booking.numKid}"></strong></p>
+                <p>
+                    Giờ:
+                    <strong th:text="${booking.startTime + ' - ' + booking.endTime}"></strong>
+                </p>
+                <p>Trẻ em: <strong th:text="${booking.numKid}"></strong> x <strong id="priceKid" th:text="${#numbers.formatDecimal(booking.room.priceKid, 0, 'POINT', 0, 'COMMA')} + ' ₫'"></strong></p>
+                <p>Người lớn: <strong th:text="${booking.numAdult}"></strong> x <strong id="priceAdult" th:text="${#numbers.formatDecimal(booking.room.priceAdult, 0, 'POINT', 0, 'COMMA')} + ' ₫'"></strong></p>
             </div>
 
         </div>
@@ -32,26 +35,57 @@
                        th:if="${_csrf != null}"
                        th:name="${_csrf.parameterName}"
                        th:value="${_csrf.token}" />
-                <input type="hidden" name="bookingId" th:value="${booking.id}"/>
+
+                <input type="hidden"
+                       name="bookingId"
+                       id="bookingId"
+                       th:value="${booking.id}" />
 
                 <!-- VOUCHER -->
                 <div class="mb-3">
                     <label>🎟 Voucher</label>
-                    <div class="input-group">
-                        <input type="text" name="voucherCode" class="form-control">
-                        <button type="button" class="btn btn-info">Áp dụng</button>
+                    <div class="input-group mt-3">
+                        <input type="text"
+                               id="couponCode"
+                               class="form-control">
+
+                        <button type="button"
+                                id="btnApplyCoupon"
+                                class="btn btn-primary">
+                            Áp dụng
+                        </button>
                     </div>
                 </div>
 
                 <!-- TOTAL -->
                 <div class="card p-3 bg-dark text-white">
-                    <p>Giá gốc: <span th:text="${price}"></span></p>
-                    <p>Thuế: <span th:text="${tax}"></span></p>
-                    <p>Giảm giá: <span th:text="${discount}"></span></p>
+                    <p>
+                        Giá gốc:
+                        <span id="price"
+                              th:text="${#numbers.formatDecimal(price, 0, 'POINT', 0, 'COMMA')} + ' ₫'">
+                        </span>
+                    </p>
 
-                    <hr>
+                    <p>
+                        Thuế:
+                        <span id="tax"
+                              th:text="${#numbers.formatDecimal(tax, 0, 'POINT', 0, 'COMMA')} + ' ₫'">
+                        </span>
+                    </p>
 
-                    <h4>Tổng: <span th:text="${total}"></span></h4>
+                    <p>
+                        Giảm giá:
+                        <span id="discount"
+                              th:text="${#numbers.formatDecimal(discount, 0, 'POINT', 0, 'COMMA')} + ' ₫'">
+                        </span>
+                    </p>
+
+                    <h4>
+                        Tổng:
+                        <span id="total"
+                              th:text="${#numbers.formatDecimal(total, 0, 'POINT', 0, 'COMMA')} + ' ₫'">
+                        </span>
+                    </h4>
                 </div>
 
                 <!-- PAY -->
@@ -65,6 +99,8 @@
     </div>
 
 </div>
-
+<th:block th:fragment="page-scripts">
+    <script src="/js/payment.js"></script>
+</th:block>
 </body>
 </html>

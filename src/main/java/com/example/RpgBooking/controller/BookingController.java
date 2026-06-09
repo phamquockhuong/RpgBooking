@@ -1,8 +1,8 @@
 package com.example.RpgBooking.controller;
 
 import com.example.RpgBooking.dto.BookingRequest;
-import com.example.RpgBooking.dto.PaymentSummary;
 import com.example.RpgBooking.model.Booking;
+import com.example.RpgBooking.model.BookingStatus;
 import com.example.RpgBooking.model.Room;
 import com.example.RpgBooking.service.*;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,10 +10,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -22,7 +28,7 @@ public class BookingController {
     private final RoomService roomService;
     private final CategoryService categoryService;
     private final BookingService bookingService;
-    private final PaymentService paymentService;
+    private final CouponService couponService;
 
     @GetMapping("/")
     public String bookingsPage(
@@ -59,33 +65,47 @@ public class BookingController {
 
     @PostMapping("/booking/create")
     public String create(BookingRequest req,
-        @AuthenticationPrincipal org.springframework.security.core.userdetails.User principal,HttpServletRequest request) {
+                         @AuthenticationPrincipal org.springframework.security.core.userdetails.User principal,
+                         HttpServletRequest request,
+                         RedirectAttributes redirectAttributes) {
+        try {
+            Booking booking = bookingService.createPendingBooking(req, principal, request);
+            return "redirect:/booking/" + booking.getId() + "/payment";
 
-        Booking booking = bookingService.createPendingBooking(req, principal, request);
+        } catch (RuntimeException e) {
+            String friendlyMessage = "Có lỗi xảy ra!";
+            if (e.getMessage().contains("Time slot already booked")) {
+                friendlyMessage = "Khung giờ này vừa có khách khác đặt mất rồi! Vui lòng chọn giờ hoặc ngày khác.";
+            } else if (e.getMessage().contains("You already have this booking")) {
+                friendlyMessage = "Bạn đang có một đơn đặt phòng tương tự đang chờ thanh toán. Vui lòng kiểm tra lại đơn hàng!";
+            } else {
+                friendlyMessage = e.getMessage();
+            }
 
-        return "redirect:/booking/" + booking.getId() + "/payment";
+            redirectAttributes.addFlashAttribute("errorMessage", friendlyMessage);
+
+            return "redirect:/booking/" + req.getRoomId();
+        }
     }
 
     @GetMapping("/booking/{id}/payment")
-    public String payment(@PathVariable Long id,
-                          @RequestParam(required = false) String voucher,
-                          Model model) {
+    public String payment(@PathVariable Long id, Model model) {
 
-        PaymentSummary summary = paymentService.calculate(id, voucher);
+        Booking booking = bookingService.getById(id);
 
-        model.addAttribute("summary", summary);
-        model.addAttribute("booking", bookingService.getById(id));
+        double price =
+                booking.getNumAdult() * booking.getRoom().getPriceAdult()
+                        + booking.getNumKid() * booking.getRoom().getPriceKid();
+
+        double tax = price * 0.1;
+
+        model.addAttribute("booking", booking);
+        model.addAttribute("price", price);
+        model.addAttribute("tax", tax);
+        model.addAttribute("discount", 0);
+        model.addAttribute("total", price + tax);
 
         return "user/payment";
-    }
-
-    @PostMapping("/booking/confirm")
-    public String confirm(@RequestParam Long bookingId,
-                          @RequestParam(required = false) String voucherCode) {
-
-        paymentService.pay(bookingId, voucherCode);
-
-        return "redirect:/booking/success";
     }
 
     @GetMapping("/about-us")
@@ -100,5 +120,38 @@ public class BookingController {
     @ModelAttribute("currentPath")
     public String getCurrentPath(HttpServletRequest request) {
         return request.getRequestURI();
+    }
+
+    @GetMapping("/api/bookings/confirmed")
+    @ResponseBody
+    public List<Booking> getConfirmedBookingsByDate(
+            @RequestParam Long roomId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+
+        return bookingService.getConfirmedBookingsByRoomAndDate(roomId, date);
+    }
+
+    @PostMapping("/booking/apply-coupon")
+    @ResponseBody
+    public Map<String, Object> applyCoupon(
+            @RequestParam Long bookingId,
+            @RequestParam String couponCode) {
+
+        Booking booking = bookingService.getById(bookingId);
+
+        return couponService.applyCoupon(booking, couponCode);
+    }
+
+    @PostMapping("/booking/confirm-payment")
+    public String confirmPayment(@RequestParam Long bookingId) {
+
+        bookingService.confirmPayment(bookingId);
+
+        return "redirect:/booking/success";
+    }
+
+    @GetMapping("/booking/success")
+    public String success() {
+        return "user/booking-success";
     }
 }

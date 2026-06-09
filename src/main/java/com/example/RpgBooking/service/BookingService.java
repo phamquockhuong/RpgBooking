@@ -1,14 +1,14 @@
 package com.example.RpgBooking.service;
 
 import com.example.RpgBooking.dto.BookingRequest;
-import com.example.RpgBooking.model.Booking;
-import com.example.RpgBooking.model.BookingStatus;
-import com.example.RpgBooking.model.Room;
-import com.example.RpgBooking.model.User;
+import com.example.RpgBooking.dto.PaymentSummary;
+import com.example.RpgBooking.exception.BookingConflictException;
+import com.example.RpgBooking.model.*;
 import com.example.RpgBooking.repository.BookingRepository;
 import com.example.RpgBooking.repository.RoomRepository;
 import com.example.RpgBooking.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -18,10 +18,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
-
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +35,7 @@ public class BookingService {
     private final BookingRepository bookingRepository;
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
+    private final CouponService couponService;
 
     public List<Booking> getAll() {
         return bookingRepository.findAll();
@@ -45,48 +48,57 @@ public class BookingService {
         Room room = roomRepository.findById(req.getRoomId())
                 .orElseThrow(() -> new RuntimeException("Room not found"));
 
-        boolean isBooked = bookingRepository.existsConflict(
-                req.getRoomId(),
-                req.getBookingDate(),
-                LocalTime.parse(req.getStartTime())
-        );
 
-        if (isBooked) {
-            throw new RuntimeException("Time slot already booked");
+        LocalTime startTime = LocalTime.parse(req.getStartTime());
+        LocalTime endTime = startTime.plusMinutes(room.getDuration());
+        int totalPlayers = req.getNumAdult() + req.getNumKid();
+
+        LocalDate bookingDate = req.getBookingDate();
+
+        LocalDate today = LocalDate.now();
+
+        if (bookingDate.isBefore(today)) {
+            throw new RuntimeException("Không thể đặt ngày trong quá khứ");
         }
 
-        Booking booking = new Booking();
-        booking.setRoom(room);
-        booking.setBookingDate(req.getBookingDate());
-        booking.setStartTime(LocalTime.parse(req.getStartTime()));
-        booking.setNumAdult(req.getNumAdult());
-        booking.setNumKid(req.getNumKid());
+        if (totalPlayers < room.getMinPlayers() || totalPlayers > room.getMaxPlayers()) {
+            throw new com.example.RpgBooking.exception.InvalidPlayerCountException(
+                    "Số lượng người chơi không hợp lệ. Phòng này hỗ trợ từ "
+                            + room.getMinPlayers() + " đến " + room.getMaxPlayers() + " người."
+            );
+        }
 
+        if (bookingDate.equals(today)
+                && startTime.isBefore(LocalTime.now())) {
+            throw new RuntimeException("Không thể đặt giờ trong quá khứ");
+        }
+
+        if (req.getNumAdult() < 1) {
+            throw new RuntimeException("Phải có ít nhất 1 người lớn");
+        }
+
+        if (req.getNumKid() < 1) {
+            throw new RuntimeException("Số trẻ em không hợp lệ");
+        }
+
+        User user;
         if (principal != null) {
-            User user = userRepository.findByEmail(principal.getUsername())
+            user = userRepository.findByEmail(principal.getUsername())
                     .orElseThrow(() -> new RuntimeException("User not found"));
-
-            booking.setUser(user);
         } else {
-
             String email = req.getEmail();
-
             if (email == null || email.isEmpty()) {
                 throw new RuntimeException("Email is required for guest booking");
             }
 
-            User user = userRepository.findByEmail(email).orElse(null);
+            user = userRepository.findByEmail(email).orElse(null);
 
             if (user == null) {
-
                 user = new User();
                 user.setEmail(email);
                 user.setUsername(email);
 
-                String rawPassword = java.util.UUID.randomUUID()
-                        .toString()
-                        .substring(0, 10);
-
+                String rawPassword = UUID.randomUUID().toString().substring(0, 10);
                 user.setPassword(passwordEncoder.encode(rawPassword));
                 user.setRole("ROLE_USER");
 
@@ -96,25 +108,61 @@ public class BookingService {
                     SimpleMailMessage message = new SimpleMailMessage();
                     message.setTo(email);
                     message.setSubject("Tài khoản RPG Booking");
-
                     message.setText(
-                            "Tài khoản của bạn đã được tạo:\n" +
+                            "Cảm ơn bạn đã đặt dịch vụ tại RPG Booking!\n" +
+                                    "Tài khoản hệ thống của bạn đã được tạo tự động:\n" +
                                     "Email: " + email + "\n" +
-                                    "Password: " + rawPassword
+                                    "Mật khẩu: " + rawPassword + "\n\n" +
+                                    "Bạn có thể dùng tài khoản này để quản lý các lịch đặt phòng sau này."
                     );
-
                     mailSender.send(message);
-
                 } catch (Exception e) {
-                    System.out.println("Mail error: " + e.getMessage());
+                    System.err.println("Mail error: " + e.getMessage());
                 }
             }
 
             autoLogin(user, request);
-
-            booking.setUser(user);
         }
 
+        Optional<Booking> existingPendingBooking = bookingRepository
+                .findByRoomIdAndBookingDateAndUserIdAndStatus(
+                        room.getId(),
+                        bookingDate,
+                        user.getId(),
+                        BookingStatus.PENDING
+                );
+
+        if (existingPendingBooking.isPresent()) {
+            Booking oldBooking = existingPendingBooking.get();
+
+            oldBooking.setStartTime(startTime);
+            oldBooking.setEndTime(endTime);
+            oldBooking.setNumAdult(req.getNumAdult());
+            oldBooking.setNumKid(req.getNumKid());
+            oldBooking.setExpiresAt(LocalDateTime.now().plusMinutes(15));
+
+            return bookingRepository.save(oldBooking);
+        }
+
+        boolean isBooked = bookingRepository.existsConflict(
+                req.getRoomId(),
+                bookingDate,
+                startTime,
+                endTime
+        );
+
+        if (isBooked) {
+            throw new BookingConflictException("Time slot already booked");
+        }
+
+        Booking booking = new Booking();
+        booking.setRoom(room);
+        booking.setUser(user);
+        booking.setBookingDate(bookingDate);
+        booking.setStartTime(startTime);
+        booking.setEndTime(endTime);
+        booking.setNumAdult(req.getNumAdult());
+        booking.setNumKid(req.getNumKid());
         booking.setStatus(BookingStatus.PENDING);
         booking.setExpiresAt(LocalDateTime.now().plusMinutes(15));
 
@@ -126,20 +174,7 @@ public class BookingService {
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
     }
 
-    public void confirm(Long bookingId) {
-        Booking booking = getById(bookingId);
-        booking.setStatus(BookingStatus.CONFIRMED);
-        bookingRepository.save(booking);
-    }
-
-    public void cancel(Long bookingId) {
-        Booking booking = getById(bookingId);
-        booking.setStatus(BookingStatus.CANCELLED);
-        bookingRepository.save(booking);
-    }
-
     public void autoLogin(User user, HttpServletRequest request) {
-
         UserDetails userDetails =
                 org.springframework.security.core.userdetails.User
                         .withUsername(user.getEmail())
@@ -162,5 +197,66 @@ public class BookingService {
                 HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
                 SecurityContextHolder.getContext()
         );
+    }
+
+    public List<Booking> getConfirmedBookingsByRoomAndDate(Long roomId, LocalDate date) {
+        return bookingRepository.findByRoomIdAndBookingDateAndStatus(roomId, date, BookingStatus.CONFIRMED);
+    }
+
+    @Transactional
+    public void confirmPayment(Long bookingId) {
+
+        Booking booking = getById(bookingId);
+
+        PaymentSummary payment =
+                couponService.calculatePayment(
+                        booking,
+                        booking.getCoupon()
+                );
+
+        booking.setGst(payment.getGst());
+        booking.setDiscountPrice(payment.getDiscount());
+        booking.setTotalPrice(payment.getTotal());
+
+        booking.setStatus(BookingStatus.CONFIRMED);
+
+        if (booking.getCoupon() != null) {
+            couponService.useCoupon(booking.getCoupon());
+        }
+
+        bookingRepository.save(booking);
+
+        sendBookingMail(booking);
+    }
+
+    private void sendBookingMail(Booking booking) {
+
+        if (booking.getUser() == null
+                || booking.getUser().getEmail() == null) {
+            return;
+        }
+
+        SimpleMailMessage message = new SimpleMailMessage();
+
+        message.setTo(booking.getUser().getEmail());
+        message.setSubject("Xác nhận đặt phòng RPG Booking");
+
+        String couponInfo = booking.getCoupon() != null
+                ? "\nVoucher: " + booking.getCoupon().getCode()
+                : "";
+
+        message.setText(
+                "Cảm ơn bạn đã đặt phòng tại RPG Booking.\n\n" +
+                        "Mã booking: #" + booking.getId() + "\n" +
+                        "Phòng: " + booking.getRoom().getName() + "\n" +
+                        "Ngày: " + booking.getBookingDate() + "\n" +
+                        "Thời gian: " + booking.getStartTime() + " - " + booking.getEndTime() + "\n" +
+                        "Người lớn: " + booking.getNumAdult() + "\n" +
+                        "Trẻ em: " + booking.getNumKid() +
+                        couponInfo +
+                        "\n\nTrạng thái: ĐÃ THANH TOÁN"
+        );
+
+        mailSender.send(message);
     }
 }

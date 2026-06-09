@@ -8,8 +8,8 @@ import java.math.BigDecimal;
 @Data
 @AllArgsConstructor
 public class PaymentSummary {
-    private BigDecimal basePrice;
-    private BigDecimal tax;
-    private BigDecimal discount;
-    private BigDecimal total;
+    private double price;
+    private double gst;
+    private double discount;
+    private double total;
 }

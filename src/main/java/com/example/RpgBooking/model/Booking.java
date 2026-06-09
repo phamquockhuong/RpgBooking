@@ -50,4 +50,8 @@ public class Booking {
 
     @ManyToOne
     private Room room;
+
+    @ManyToOne
+    @JoinColumn(name = "coupon_id")
+    private Coupon coupon;
 }

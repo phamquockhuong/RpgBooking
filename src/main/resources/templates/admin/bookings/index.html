@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/admin-layout :: layout(~{:: #content})}">
+<body>
+<div id="content">
+    <!--begin::Container-->
+    <div class="container-fluid">
+        <div class="app-content-header">
+            <!--begin::Row-->
+            <div class="row">
+                <div class="col-sm-6">
+                    <h3 class="mb-0">Danh sách đặt phòng</h3>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-end">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Danh sách đặt phòng</li>
+                    </ol>
+                </div>
+            </div>
+            <!--end::Row-->
+        </div>
+        <!--end::Container-->
+
+        <div class="app-content">
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tên trò chơi</th>
+                    <th>Người dùng</th>
+                    <th>Mã giảm giá</th>
+                    <th>Ngày đặt phòng</th>
+                    <th>Thời gian</th>
+                    <th>Giá được giảm</th>
+                    <th>Tiền thuế</th>
+                    <th>Tổng tiền</th>
+                    <th>SL(Trẻ em/Người lớn)</th>
+                    <th>Ngày tạo</th>
+                    <th>Hết hạn</th>
+                    <th>Trạng thái</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="booking : ${bookings}">
+                    <td th:text="${booking.id}"></td>
+                    <td th:text="${booking.room != null ? booking.room.name : '-'}"></td>
+                    <td th:text="${booking.user != null ? booking.user.email : '-'}"></td>
+                    <td th:text="${booking.coupon != null ? booking.coupon.code : '-'}"></td>
+                    <td th:text="${#temporals.format(booking.bookingDate, 'dd/MM/yyyy')}"></td>
+                    <td th:text="${booking.startTime} + ' - ' + ${booking.endTime}"></td>
+                    <td th:text="${#numbers.formatDecimal(booking.discountPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
+                    <td th:text="${#numbers.formatDecimal(booking.gst, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
+                    <td th:text="${#numbers.formatDecimal(booking.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
+                    <td th:text="${booking.numKid} + '/' + ${booking.numAdult}"></td>
+                    <td th:text="${#temporals.format(booking.createdAt, 'dd/MM/yyyy')}"></td>
+                    <td th:text="${#temporals.format(booking.expiresAt, 'dd/MM/yyyy HH:mm')}"></td>
+                    <td th:text="${booking.status}"></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <nav class="mt-3">
+                <ul class="pagination">
+                    <li class="page-item" th:classappend="${bookings.first} ? 'disabled'">
+                        <a class="page-link" th:href="@{/admin/rooms(page=${bookings.number - 1})}">Trước</a>
+                    </li>
+
+                    <li class="page-item" th:each="i : ${#numbers.sequence(0, bookings.totalPages - 1)}"
+                        th:classappend="${i == bookings.number} ? 'active'">
+                        <a class="page-link" th:href="@{/admin/rooms(page=${i})}" th:text="${i + 1}"></a>
+                    </li>
+
+                    <li class="page-item" th:classappend="${bookings.last} ? 'disabled'">
+                        <a class="page-link" th:href="@{/admin/rooms(page=${bookings.number + 1})}">Sau</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+</body>
+</html>

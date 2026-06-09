@@ -33,13 +33,19 @@
 
                 <form th:action="@{/booking/create}" method="post">
 
+                    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show fw-bold mb-3" role="alert">
+                        <span th:text="${errorMessage}">Nội dung thông báo lỗi sẽ tự động hiển thị ở đây</span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
                     <!-- CSRF -->
                     <input type="hidden"
                            th:if="${_csrf != null}"
                            th:name="${_csrf.parameterName}"
                            th:value="${_csrf.token}" />
 
-                    <input type="hidden" name="roomId" th:value="${room.id}"/>
+                    <input type="hidden" name="roomId" id="roomId" th:value="${room.id}"/>
+                    <input type="hidden" id="roomDuration" th:value="${room.duration}" />
 
                     <!-- EMAIL -->
                     <div class="mb-3">
@@ -64,7 +70,7 @@
                     <!-- DATE -->
                     <div class="mb-3">
                         <label class="form-label">📅 Chọn ngày</label>
-                        <input type="date" name="bookingDate"
+                        <input type="date" name="bookingDate" id="bookingDate"
                                class="form-control form-control-lg"
                                required>
                     </div>
@@ -72,9 +78,9 @@
                     <!-- TIME -->
                     <div class="mb-3">
                         <label class="form-label">🕒 Giờ bắt đầu</label>
-                        <input type="time" name="startTime"
-                               class="form-control form-control-lg"
-                               required>
+                        <select name="startTime" id="startTimeSelect"
+                                class="form-control form-control-lg" required>
+                        </select>
                     </div>
 
                     <!-- PEOPLE -->
@@ -85,6 +91,7 @@
                             <input type="number"
                                    name="numAdult"
                                    class="form-control form-control-lg"
+                                   required
                                    min="1"
                                    value="1">
                         </div>
@@ -94,8 +101,9 @@
                             <input type="number"
                                    name="numKid"
                                    class="form-control form-control-lg"
-                                   min="0"
-                                   value="0">
+                                   required
+                                   min="1"
+                                   value="1">
                         </div>
 
                     </div>
@@ -118,6 +126,8 @@
         </div>
     </div>
 </div>
-
+<th:block th:fragment="page-scripts">
+    <script src="/js/booking.js"></script>
+</th:block>
 </body>
 </html>

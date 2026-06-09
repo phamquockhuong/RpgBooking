@@ -17,6 +17,7 @@ public class Coupon {
     private String code;
     private String discountType;
     private double discountValue;
+    private int quantity;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private boolean active = true;
