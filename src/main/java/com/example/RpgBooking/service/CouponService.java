@@ -3,8 +3,10 @@ package com.example.RpgBooking.service;
 import com.example.RpgBooking.dto.PaymentSummary;
 import com.example.RpgBooking.model.Booking;
 import com.example.RpgBooking.model.Coupon;
+import com.example.RpgBooking.model.Event;
 import com.example.RpgBooking.repository.BookingRepository;
 import com.example.RpgBooking.repository.CouponRepository;
+import com.example.RpgBooking.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,7 @@ public class CouponService {
 
     private final CouponRepository couponRepository;
     private final BookingRepository bookingRepository;
+    private final EventRepository eventRepository;
 
     public Map<String, Object> applyCoupon(
             Booking booking,
@@ -84,6 +87,17 @@ public class CouponService {
                 booking.getNumAdult() * booking.getRoom().getPriceAdult()
                         + booking.getNumKid() * booking.getRoom().getPriceKid();
 
+        Event event = eventRepository.findFirstByActiveTrueAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
+                        booking.getBookingDate(),
+                        booking.getBookingDate()
+                )
+                .orElse(null);
+
+        if (event != null) {
+
+            price = price * (event.getPriceMultiplier() / 100.0);
+        }
+
         double gst = price * 0.1;
 
         double discount = 0;
@@ -91,16 +105,19 @@ public class CouponService {
         if (coupon != null) {
 
             if ("PERCENT".equals(coupon.getDiscountType())) {
-                discount = (price + gst)
-                        * coupon.getDiscountValue() / 100;
-            }
 
-            else if ("AMOUNT".equals(coupon.getDiscountType())) {
+                discount =
+                        (price + gst)
+                                * coupon.getDiscountValue() / 100;
+
+            } else if ("AMOUNT".equals(coupon.getDiscountType())) {
+
                 discount = coupon.getDiscountValue();
             }
         }
 
-        double total = Math.max(0, price + gst - discount);
+        double total =
+                Math.max(0, price + gst - discount);
 
         return new PaymentSummary(
                 price,
