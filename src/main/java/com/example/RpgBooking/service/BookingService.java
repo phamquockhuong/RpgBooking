@@ -4,8 +4,10 @@ import com.example.RpgBooking.dto.BookingRequest;
 import com.example.RpgBooking.model.Booking;
 import com.example.RpgBooking.model.BookingStatus;
 import com.example.RpgBooking.model.Room;
+import com.example.RpgBooking.model.User;
 import com.example.RpgBooking.repository.BookingRepository;
 import com.example.RpgBooking.repository.RoomRepository;
+import com.example.RpgBooking.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,12 +21,14 @@ public class BookingService {
 
     private final BookingRepository bookingRepository;
     private final RoomRepository roomRepository;
+    private final UserRepository userRepository;
 
     public List<Booking> getAll() {
         return bookingRepository.findAll();
     }
 
-    public Booking createPendingBooking(BookingRequest req) {
+    public Booking createPendingBooking(BookingRequest req,
+                                        org.springframework.security.core.userdetails.User principal) {
 
         Room room = roomRepository.findById(req.getRoomId())
                 .orElseThrow(() -> new RuntimeException("Room not found"));
@@ -46,8 +50,24 @@ public class BookingService {
         booking.setNumAdult(req.getNumAdult());
         booking.setNumKid(req.getNumKid());
 
-        booking.setStatus(BookingStatus.PENDING);
+        if (principal != null) {
+            User user = userRepository.findByEmail(principal.getUsername())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
 
+            booking.setUser(user);
+        } else {
+            User user = new User();
+            user.setEmail(req.getEmail());
+            user.setUsername(req.getEmail());
+            user.setPassword("GUEST");
+            user.setRole("ROLE_USER");
+
+            userRepository.save(user);
+
+            booking.setUser(user);
+        }
+
+        booking.setStatus(BookingStatus.PENDING);
         booking.setExpiresAt(LocalDateTime.now().plusMinutes(15));
 
         return bookingRepository.save(booking);

@@ -5,10 +5,12 @@ import com.example.RpgBooking.dto.PaymentSummary;
 import com.example.RpgBooking.model.Booking;
 import com.example.RpgBooking.model.Room;
 import com.example.RpgBooking.service.*;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -56,9 +58,10 @@ public class BookingController {
     }
 
     @PostMapping("/booking/create")
-    public String create(BookingRequest req) {
+    public String create(BookingRequest req,
+        @AuthenticationPrincipal org.springframework.security.core.userdetails.User principal) {
 
-        Booking booking = bookingService.createPendingBooking(req);
+        Booking booking = bookingService.createPendingBooking(req, principal);
 
         return "redirect:/booking/" + booking.getId() + "/payment";
     }
@@ -83,5 +86,19 @@ public class BookingController {
         paymentService.pay(bookingId, voucherCode);
 
         return "redirect:/booking/success";
+    }
+
+    @GetMapping("/about-us")
+    public String aboutUsPage() { return "user/about-us"; }
+
+    @GetMapping("/faq")
+    public String faqPage() { return "user/faq"; }
+
+    @GetMapping("/contact")
+    public String contactPage() { return "user/contact"; }
+
+    @ModelAttribute("currentPath")
+    public String getCurrentPath(HttpServletRequest request) {
+        return request.getRequestURI();
     }
 }

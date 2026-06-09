@@ -12,4 +12,5 @@ public class BookingRequest {
     private int numAdult = 1;
     private int numKid = 1;
     private String voucherCode;
+    private String email;
 }
