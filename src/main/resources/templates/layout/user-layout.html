@@ -275,7 +275,7 @@
         </div>
     </footer>
 
-    <th:block th:insert="~{::page-scripts}"></th:block>
+    <th:block th:replace="~{::page-scripts} ?: _"></th:block>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

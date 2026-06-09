@@ -59,9 +59,9 @@ public class BookingController {
 
     @PostMapping("/booking/create")
     public String create(BookingRequest req,
-        @AuthenticationPrincipal org.springframework.security.core.userdetails.User principal) {
+        @AuthenticationPrincipal org.springframework.security.core.userdetails.User principal,HttpServletRequest request) {
 
-        Booking booking = bookingService.createPendingBooking(req, principal);
+        Booking booking = bookingService.createPendingBooking(req, principal, request);
 
         return "redirect:/booking/" + booking.getId() + "/payment";
     }

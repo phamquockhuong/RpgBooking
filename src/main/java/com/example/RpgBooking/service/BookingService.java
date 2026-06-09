@@ -8,7 +8,15 @@ import com.example.RpgBooking.model.User;
 import com.example.RpgBooking.repository.BookingRepository;
 import com.example.RpgBooking.repository.RoomRepository;
 import com.example.RpgBooking.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -19,6 +27,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BookingService {
 
+    private final JavaMailSender mailSender;
+    private final PasswordEncoder passwordEncoder;
+
     private final BookingRepository bookingRepository;
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
@@ -28,7 +39,8 @@ public class BookingService {
     }
 
     public Booking createPendingBooking(BookingRequest req,
-                                        org.springframework.security.core.userdetails.User principal) {
+                                        org.springframework.security.core.userdetails.User principal,
+                                        HttpServletRequest request) {
 
         Room room = roomRepository.findById(req.getRoomId())
                 .orElseThrow(() -> new RuntimeException("Room not found"));
@@ -56,13 +68,49 @@ public class BookingService {
 
             booking.setUser(user);
         } else {
-            User user = new User();
-            user.setEmail(req.getEmail());
-            user.setUsername(req.getEmail());
-            user.setPassword("GUEST");
-            user.setRole("ROLE_USER");
 
-            userRepository.save(user);
+            String email = req.getEmail();
+
+            if (email == null || email.isEmpty()) {
+                throw new RuntimeException("Email is required for guest booking");
+            }
+
+            User user = userRepository.findByEmail(email).orElse(null);
+
+            if (user == null) {
+
+                user = new User();
+                user.setEmail(email);
+                user.setUsername(email);
+
+                String rawPassword = java.util.UUID.randomUUID()
+                        .toString()
+                        .substring(0, 10);
+
+                user.setPassword(passwordEncoder.encode(rawPassword));
+                user.setRole("ROLE_USER");
+
+                userRepository.save(user);
+
+                try {
+                    SimpleMailMessage message = new SimpleMailMessage();
+                    message.setTo(email);
+                    message.setSubject("Tài khoản RPG Booking");
+
+                    message.setText(
+                            "Tài khoản của bạn đã được tạo:\n" +
+                                    "Email: " + email + "\n" +
+                                    "Password: " + rawPassword
+                    );
+
+                    mailSender.send(message);
+
+                } catch (Exception e) {
+                    System.out.println("Mail error: " + e.getMessage());
+                }
+            }
+
+            autoLogin(user, request);
 
             booking.setUser(user);
         }
@@ -88,5 +136,31 @@ public class BookingService {
         Booking booking = getById(bookingId);
         booking.setStatus(BookingStatus.CANCELLED);
         bookingRepository.save(booking);
+    }
+
+    public void autoLogin(User user, HttpServletRequest request) {
+
+        UserDetails userDetails =
+                org.springframework.security.core.userdetails.User
+                        .withUsername(user.getEmail())
+                        .password(user.getPassword())
+                        .roles(user.getRole() != null
+                                ? user.getRole().replace("ROLE_", "")
+                                : "USER")
+                        .build();
+
+        UsernamePasswordAuthenticationToken auth =
+                new UsernamePasswordAuthenticationToken(
+                        userDetails,
+                        null,
+                        userDetails.getAuthorities()
+                );
+
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
+        request.getSession(true).setAttribute(
+                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+                SecurityContextHolder.getContext()
+        );
     }
 }
