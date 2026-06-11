@@ -21,4 +21,9 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
     List<Room> findTopBookedRooms(@Param("date") java.time.LocalDate date, Pageable pageable);
 
     long count();
+
+    @Query("SELECT r FROM Room r WHERE " +
+            "LOWER(r.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(r.category.name) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+    Page<Room> searchByText(@Param("keyword") String keyword, Pageable pageable);
 }

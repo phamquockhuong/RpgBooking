@@ -18,8 +18,20 @@ public class AdminBookingController {
     private BookingRepository bookingRepository;
 
     @GetMapping
-    public String list(Model model, @PageableDefault(size = 15) Pageable pageable) {
-        Page<Booking> bookings = bookingRepository.findAll(pageable);
+    public String list(Model model,
+                       @RequestParam(value = "keyword", required = false) String keyword,
+                       @PageableDefault(size = 15) Pageable pageable) {
+
+        Page<Booking> bookings;
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            String cleanKeyword = keyword.trim();
+            bookings = bookingRepository.searchByText(cleanKeyword, pageable);
+
+            model.addAttribute("keyword", cleanKeyword);
+        } else {
+            bookings = bookingRepository.findAll(pageable);
+        }
 
         model.addAttribute("bookings", bookings);
         return "admin/bookings/index";

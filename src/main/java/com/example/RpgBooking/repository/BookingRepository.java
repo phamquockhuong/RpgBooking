@@ -3,6 +3,8 @@ package com.example.RpgBooking.repository;
 import com.example.RpgBooking.dto.TopRoomDTO;
 import com.example.RpgBooking.model.Booking;
 import com.example.RpgBooking.model.BookingStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -60,4 +62,9 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<TopRoomDTO> findTopRooms(LocalDate fromDate);
 
     long count();
+
+    @Query("SELECT b FROM Booking b WHERE " +
+            "LOWER(b.user.email) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(b.room.name) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+    Page<Booking> searchByText(@Param("keyword") String keyword, Pageable pageable);
 }

@@ -20,6 +20,15 @@
             <div class="d-flex justify-content-between mt-3">
                 <a th:href="@{/admin/rooms/add}" class="btn btn-primary">+ Thêm phòng mới</a>
                 <!--end::Row-->
+                <div class="col-md-3">
+                    <form th:action="@{/admin/rooms}" method="GET">
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="keyword" th:value="${keyword}" placeholder="Nhập thông tin cần tìm...">
+                            <button type="submit" class="btn btn-secondary"><i class="bi bi-search"></i> Tìm kiếm</button>
+                            <a th:if="${keyword != null && !keyword.isEmpty()}" th:href="@{/admin/rooms}" class="btn btn-outline-danger">Xóa lọc</a>
+                        </div>
+                    </form>
+                </div>
             </div>
 
         </div>

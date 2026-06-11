@@ -23,8 +23,20 @@ public class RoomBlockController {
     @Autowired private RoomRepository roomRepo;
 
     @GetMapping
-    public String list(Model model, @PageableDefault(size = 15) Pageable pageable) {
-        Page<RoomBlock> roomPage = roomBlockRepo.findAll(pageable);
+    public String list(Model model,
+                       @RequestParam(value = "keyword", required = false) String keyword,
+                       @PageableDefault(size = 15) Pageable pageable) {
+
+        Page<RoomBlock> roomPage;
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            String cleanKeyword = keyword.trim();
+            roomPage = roomBlockRepo.searchBookings(cleanKeyword, pageable);
+
+            model.addAttribute("keyword", cleanKeyword);
+        } else {
+            roomPage = roomBlockRepo.findAll(pageable);
+        }
 
         model.addAttribute("roomPage", roomPage);
         return "admin/room_blocks/index";

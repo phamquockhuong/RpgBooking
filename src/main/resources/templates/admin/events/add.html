@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/admin-layout :: layout(~{:: #content})}">
+<body>
+<div id="content">
+
+    <div class="container-fluid">
+
+        <div class="app-content-header">
+            <div class="row">
+                <div class="col-sm-6">
+                    <h3 class="mb-0">Thêm sự kiện</h3>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-end">
+                        <li class="breadcrumb-item">
+                            <a href="/admin/dashboard">Home</a>
+                        </li>
+                        <li class="breadcrumb-item active">
+                            Thêm sự kiện
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <div class="app-content">
+
+            <form th:action="@{/admin/events/add}"
+                  th:object="${event}"
+                  method="post">
+
+                <div class="mb-3">
+                    <label>Tên sự kiện</label>
+                    <input type="text"
+                           th:field="*{name}"
+                           class="form-control">
+                    <div class="text-danger"
+                         th:errors="*{name}">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label>Hệ số giá</label>
+                    <input type="number"
+                           step="0.01"
+                           min="0"
+                           th:field="*{priceMultiplier}"
+                           class="form-control">
+                </div>
+
+                <div class="mb-3">
+                    <label>Ngày bắt đầu</label>
+                    <input type="date"
+                           th:field="*{startDate}"
+                           class="form-control">
+                </div>
+
+                <div class="mb-3">
+                    <label>Ngày kết thúc</label>
+                    <input type="date"
+                           th:field="*{endDate}"
+                           class="form-control">
+                    <div class="text-danger"
+                         th:errors="*{endDate}">
+                    </div>
+                </div>
+
+                <div class="form-check mb-3">
+                    <input type="checkbox"
+                           th:field="*{active}"
+                           class="form-check-input">
+
+                    <label class="form-check-label">
+                        Kích hoạt
+                    </label>
+                </div>
+
+                <button class="btn btn-primary">
+                    Lưu
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+</body>
+</html>

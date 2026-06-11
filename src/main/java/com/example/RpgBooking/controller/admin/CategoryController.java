@@ -20,8 +20,18 @@ public class CategoryController {
     private CategoryRepository categoryRepository;
 
     @GetMapping
-    public String list(Model model, @PageableDefault(size = 15) Pageable pageable) {
-        Page<Category> categories = categoryRepository.findAll(pageable);
+    public String list(Model model,
+                       @RequestParam(value = "keyword", required = false) String keyword,
+                       @PageableDefault(size = 15) Pageable pageable) {
+
+        Page<Category> categories;
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            categories = categoryRepository.findByNameContainingIgnoreCase(keyword.trim(), pageable);
+            model.addAttribute("keyword", keyword.trim());
+        } else {
+            categories = categoryRepository.findAll(pageable);
+        }
 
         model.addAttribute("categories", categories);
         return "admin/categories/index";

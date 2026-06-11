@@ -9,7 +9,7 @@
         <div class="app-content-header">
             <div class="row">
                 <div class="col-sm-6">
-                    <h3 class="mb-0">Danh sách chặn phòng</h3>
+                    <h3 class="mb-0">Danh sách sự kiện</h3>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-end">
@@ -17,24 +17,24 @@
                             <a href="/admin/dashboard">Home</a>
                         </li>
                         <li class="breadcrumb-item active">
-                            Chặn phòng
+                            Thêm sự kiện
                         </li>
                     </ol>
                 </div>
             </div>
 
             <div class="d-flex justify-content-between mt-3">
-                <a th:href="@{/admin/room-blocks/add}"
+                <a th:href="@{/admin/events/add}"
                    class="btn btn-primary">
-                    + Thêm lịch chặn phòng
+                    + Danh sách sự kiện
                 </a>
 
                 <div class="col-md-3">
-                    <form th:action="@{/admin/room-blocks}" method="GET">
+                    <form th:action="@{/admin/events}" method="GET">
                         <div class="input-group">
                             <input type="text" class="form-control" name="keyword" th:value="${keyword}" placeholder="Nhập thông tin cần tìm...">
                             <button type="submit" class="btn btn-secondary"><i class="bi bi-search"></i> Tìm kiếm</button>
-                            <a th:if="${keyword != null && !keyword.isEmpty()}" th:href="@{/admin/room-blocks}" class="btn btn-outline-danger">Xóa lọc</a>
+                            <a th:if="${keyword != null && !keyword.isEmpty()}" th:href="@{/admin/events}" class="btn btn-outline-danger">Xóa lọc</a>
                         </div>
                     </form>
                 </div>
@@ -47,84 +47,85 @@
                 <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Phòng</th>
-                    <th>Bắt đầu</th>
-                    <th>Kết thúc</th>
-                    <th>Lý do</th>
+                    <th>Tên</th>
+                    <th>Hệ số giá</th>
+                    <th>Từ ngày</th>
+                    <th>Đến ngày</th>
                     <th>Trạng thái</th>
-                    <th width="180">Thao tác</th>
+                    <th>Hành động</th>
                 </tr>
                 </thead>
 
                 <tbody>
 
-                <tr th:if="${roomPage.empty}">
+                <tr th:if="${eventPage.empty}">
                     <td colspan="7" class="text-center">
                         Chưa có dữ liệu
                     </td>
                 </tr>
 
-                <tr th:each="block : ${roomPage.content}">
-                    <td th:text="${block.id}"></td>
+                <tr th:each="event : ${eventPage.content}">
+                    <td th:text="${event.id}"></td>
 
-                    <td th:text="${block.room != null ? block.room.name : 'N/A'}"></td>
+                    <td th:text="${event.name}"></td>
 
-                    <td th:text="${#temporals.format(block.startTime, 'dd/MM/yyyy HH:mm')}"></td>
+                    <td th:text="${event.priceMultiplier}"></td>
 
-                    <td th:text="${#temporals.format(block.endTime, 'dd/MM/yyyy HH:mm')}"></td>
+                    <td th:text="${#temporals.format(event.startDate,'dd/MM/yyyy')}"></td>
 
-                    <td th:text="${block.reason}"></td>
+                    <td th:text="${#temporals.format(event.endDate,'dd/MM/yyyy')}"></td>
 
                     <td>
-                        <span th:if="${block.active}"
-                              class="badge bg-success">
-                            Hoạt động
-                        </span>
+            <span th:if="${event.active}"
+                  class="badge bg-success">
+                Hoạt động
+            </span>
 
-                        <span th:unless="${block.active}"
-                              class="badge bg-secondary">
-                            Đã tắt
-                        </span>
+                        <span th:unless="${event.active}"
+                              class="badge bg-danger">
+                Tắt
+            </span>
                     </td>
 
                     <td>
-                        <a th:href="@{/admin/room-blocks/edit/{id}(id=${block.id})}"
-                           class="btn btn-sm btn-warning">
+
+                        <a th:href="@{/admin/events/edit/{id}(id=${event.id})}"
+                           class="btn btn-warning btn-sm">
                             Sửa
                         </a>
 
-                        <form th:action="@{/admin/room-blocks/delete/{id}(id=${block.id})}"
+                        <form th:action="@{/admin/events/delete/{id}(id=${event.id})}"
                               method="post"
-                              style="display:inline;">
+                              style="display:inline">
 
-                            <button type="submit"
-                                    class="btn btn-sm btn-danger"
-                                    onclick="return confirm('Bạn có chắc muốn xóa lịch chặn này?')">
+                            <button class="btn btn-danger btn-sm"
+                                    onclick="return confirm('Xóa sự kiện?')">
                                 Xóa
                             </button>
 
                         </form>
+
                     </td>
                 </tr>
 
                 </tbody>
             </table>
 
-            <nav class="mt-3" th:if="${roomPage.totalPages > 0}">
+            <nav class="mt-3" th:if="${eventPage.totalPages > 0}">
                 <ul class="pagination">
 
                     <li class="page-item"
-                        th:classappend="${roomPage.first} ? 'disabled'">
+                        th:classappend="${eventPage.first} ? 'disabled'">
 
                         <a class="page-link"
-                           th:href="@{/admin/room-blocks(page=${roomPage.number - 1})}">
+                           th:href="@{/admin/room-blocks(page=${eventPage.number - 1})}">
                             Trước
                         </a>
                     </li>
 
                     <li class="page-item"
-                        th:each="i : ${#numbers.sequence(0, roomPage.totalPages - 1)}"
-                        th:classappend="${i == roomPage.number} ? 'active'">
+                        th:each="i : ${#numbers.sequence(0, eventPage.totalPages - 1)}"
+                        th:classappend="${i == eventPage.number} ? 'active'">
 
                         <a class="page-link"
                            th:text="${i + 1}"
@@ -134,10 +135,10 @@
                     </li>
 
                     <li class="page-item"
-                        th:classappend="${roomPage.last} ? 'disabled'">
+                        th:classappend="${eventPage.last} ? 'disabled'">
 
                         <a class="page-link"
-                           th:href="@{/admin/room-blocks(page=${roomPage.number + 1})}">
+                           th:href="@{/admin/room-blocks(page=${eventPage.number + 1})}">
                             Sau
                         </a>
 
