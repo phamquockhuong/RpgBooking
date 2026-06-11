@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/admin-layout :: layout(~{:: #content})}">
+<body>
+<div id="content">
+
+    <div class="container-fluid">
+
+        <div class="app-content-header">
+            <div class="row">
+                <div class="col-sm-6">
+                    <h3 class="mb-0">Danh sách mã giảm giá</h3>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-end">
+                        <li class="breadcrumb-item">
+                            <a href="/admin/dashboard">Home</a>
+                        </li>
+                        <li class="breadcrumb-item active">
+                            Danh sách mã giảm giá
+                        </li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between mt-3">
+                <a th:href="@{/admin/coupons/add}"
+                   class="btn btn-primary">
+                    + Thêm mã giảm giá
+                </a>
+
+                <div class="col-md-3">
+                    <form th:action="@{/admin/coupons}" method="GET">
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="keyword" th:value="${keyword}" placeholder="Nhập thông tin cần tìm...">
+                            <button type="submit" class="btn btn-secondary"><i class="bi bi-search"></i> Tìm kiếm</button>
+                            <a th:if="${keyword != null && !keyword.isEmpty()}" th:href="@{/admin/coupons}" class="btn btn-outline-danger">Xóa lọc</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="app-content">
+
+            <table class="table table-hover table-bordered align-middle">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Mã Coupon</th>
+                    <th>Loại</th>
+                    <th>Giá trị</th>
+                    <th>Số lượng</th>
+                    <th>Ngày bắt đầu</th>
+                    <th>Ngày kết thúc</th>
+                    <th>Người dùng</th>
+                    <th>Trạng thái</th>
+                    <th width="150">
+                        Thao tác
+                    </th>
+                </tr>
+                </thead>
+
+                <tbody>
+
+                <tr th:if="${couponPage.empty}">
+                    <td colspan="10" class="text-center">
+                        Chưa có dữ liệu
+                    </td>
+                </tr>
+
+                <tr th:each="coupon : ${couponPage.content}">
+
+                    <td th:text="${coupon.id}"></td>
+
+                    <td>
+                                    <span class="badge bg-primary"
+                                          th:text="${coupon.code}">
+                                    </span>
+                    </td>
+
+                    <td>
+                                    <span th:if="${coupon.discountType == 'PERCENT'}">
+                                        %
+                                    </span>
+
+                        <span th:if="${coupon.discountType == 'FIXED'}">
+                                        VNĐ
+                                    </span>
+                    </td>
+
+                    <td th:text="${coupon.discountValue}">
+                    </td>
+
+                    <td th:text="${coupon.quantity}">
+                    </td>
+
+                    <td th:text="${#temporals.format(coupon.startDate,'dd/MM/yyyy HH:mm')}">
+                    </td>
+
+                    <td th:text="${#temporals.format(coupon.endDate,'dd/MM/yyyy HH:mm')}">
+                    </td>
+
+                    <td>
+                                    <span th:text="${coupon.user != null ? coupon.user.username : 'Tất cả người dùng'}">
+                                    </span>
+                    </td>
+
+                    <td>
+
+                                    <span class="badge bg-success"
+                                          th:if="${coupon.active}">
+                                        Active
+                                    </span>
+
+                        <span class="badge bg-danger"
+                              th:unless="${coupon.active}">
+                                        Inactive
+                                    </span>
+
+                    </td>
+
+                    <td>
+
+                        <a th:href="@{/admin/coupons/edit/{id}(id=${coupon.id})}"
+                           class="btn btn-warning btn-sm">
+
+                            <i class="bi bi-pencil"></i>
+
+                        </a>
+
+                        <form th:action="@{/admin/coupons/delete/{id}(id=${coupon.id})}"
+                              method="post"
+                              class="d-inline">
+
+                            <button type="submit"
+                                    class="btn btn-danger btn-sm"
+                                    onclick="return confirm('Bạn có chắc muốn xóa coupon này?')">
+
+                                <i class="bi bi-trash"></i>
+
+                            </button>
+
+                        </form>
+
+                    </td>
+
+                </tr>
+
+                </tbody>
+            </table>
+
+            <nav class="mt-3" th:if="${couponPage.totalPages > 0}">
+                <ul class="pagination">
+
+                    <li class="page-item"
+                        th:classappend="${couponPage.first} ? 'disabled'">
+
+                        <a class="page-link"
+                           th:href="@{/admin/room-blocks(page=${couponPage.number - 1})}">
+                            Trước
+                        </a>
+                    </li>
+
+                    <li class="page-item"
+                        th:each="i : ${#numbers.sequence(0, couponPage.totalPages - 1)}"
+                        th:classappend="${i == couponPage.number} ? 'active'">
+
+                        <a class="page-link"
+                           th:text="${i + 1}"
+                           th:href="@{/admin/room-blocks(page=${i})}">
+                        </a>
+
+                    </li>
+
+                    <li class="page-item"
+                        th:classappend="${couponPage.last} ? 'disabled'">
+
+                        <a class="page-link"
+                           th:href="@{/admin/room-blocks(page=${couponPage.number + 1})}">
+                            Sau
+                        </a>
+
+                    </li>
+
+                </ul>
+            </nav>
+
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

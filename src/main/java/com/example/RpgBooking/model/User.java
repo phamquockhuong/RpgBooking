@@ -28,5 +28,5 @@ public class User {
     @Column(name = "token_expiry_date")
     private LocalDateTime tokenExpiryDate;
 
-    private String role;
+    private String role; //ROLE_ADMIN,ROLE_USER
 }

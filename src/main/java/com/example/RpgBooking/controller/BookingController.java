@@ -2,11 +2,14 @@ package com.example.RpgBooking.controller;
 
 import com.example.RpgBooking.dto.BookingRequest;
 import com.example.RpgBooking.model.Booking;
-import com.example.RpgBooking.model.BookingStatus;
+import com.example.RpgBooking.model.Contact;
 import com.example.RpgBooking.model.Room;
+import com.example.RpgBooking.repository.CategoryRepository;
+import com.example.RpgBooking.repository.ContactRepository;
 import com.example.RpgBooking.service.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -29,6 +32,10 @@ public class BookingController {
     private final CategoryService categoryService;
     private final BookingService bookingService;
     private final CouponService couponService;
+    private final FaqService faqService;
+
+    @Autowired
+    private ContactRepository contactRepo;
 
     @GetMapping("/")
     public String bookingsPage(
@@ -112,10 +119,31 @@ public class BookingController {
     public String aboutUsPage() { return "user/about-us"; }
 
     @GetMapping("/faq")
-    public String faqPage() { return "user/faq"; }
+    public String faqPage(Model model) {
+
+        model.addAttribute(
+                "faqs",
+                faqService.getActiveFaqs()
+        );
+
+        return "user/faq";
+    }
 
     @GetMapping("/contact")
     public String contactPage() { return "user/contact"; }
+
+    @PostMapping("/contact")
+    public String handleSendContact(@ModelAttribute Contact contact,
+                                    RedirectAttributes redirectAttributes) {
+
+        contact.setActive(false);
+
+        contactRepo.save(contact);
+
+        redirectAttributes.addFlashAttribute("successMessage", "Gửi yêu cầu liên hệ thành công! Chúng tôi sẽ phản hồi sớm nhất.");
+
+        return "redirect:/contact";
+    }
 
     @ModelAttribute("currentPath")
     public String getCurrentPath(HttpServletRequest request) {

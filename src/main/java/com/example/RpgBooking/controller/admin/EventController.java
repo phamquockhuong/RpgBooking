@@ -1,5 +1,6 @@
 package com.example.RpgBooking.controller.admin;
 
+import com.example.RpgBooking.model.Category;
 import com.example.RpgBooking.model.Event;
 import com.example.RpgBooking.repository.EventRepository;
 import jakarta.validation.Valid;
@@ -22,9 +23,17 @@ public class EventController {
 
     @GetMapping
     public String index(Model model,
+                        @RequestParam(value = "keyword", required = false) String keyword,
                         @PageableDefault(size = 15) Pageable pageable) {
 
-        Page<Event> eventPage = eventRepo.findAll(pageable);
+        Page<Event> eventPage;
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            eventPage = eventRepo.findByNameContainingIgnoreCase(keyword.trim(), pageable);
+            model.addAttribute("keyword", keyword.trim());
+        } else {
+            eventPage = eventRepo.findAll(pageable);
+        }
 
         model.addAttribute("eventPage", eventPage);
 

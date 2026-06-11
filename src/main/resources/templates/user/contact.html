@@ -18,19 +18,25 @@
             </ul>
         </div>
         <div class="col-md-7">
-            <form class="bg-custom-card p-4 rounded shadow">
+            <form th:action="@{/contact}" method="POST" class="bg-custom-card p-4 rounded shadow">
+
+                <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+
                 <div class="mb-3">
                     <label class="form-label">Họ và tên</label>
-                    <input type="text" class="form-control bg-dark text-white border-secondary">
+                    <input type="text" name="name" class="form-control bg-dark text-white border-secondary" required>
                 </div>
+
                 <div class="mb-3">
                     <label class="form-label">Email</label>
-                    <input type="email" class="form-control bg-dark text-white border-secondary">
+                    <input type="email" name="email" class="form-control bg-dark text-white border-secondary" required>
                 </div>
+
                 <div class="mb-3">
                     <label class="form-label">Nội dung hỗ trợ</label>
-                    <textarea class="form-control bg-dark text-white border-secondary" rows="4"></textarea>
+                    <textarea name="content" class="form-control bg-dark text-white border-secondary" rows="4" required></textarea>
                 </div>
+
                 <button type="submit" class="btn btn-info w-100 fw-bold">GỬI YÊU CẦU</button>
             </form>
         </div>

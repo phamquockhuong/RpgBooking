@@ -24,5 +24,5 @@ public class Event {
     @Column(name = "end_date", nullable = false)
     private LocalDate endDate;
 
-    private boolean active;
+    private boolean active = true;
 }

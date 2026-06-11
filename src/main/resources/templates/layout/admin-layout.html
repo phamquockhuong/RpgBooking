@@ -260,6 +260,35 @@
                     </li>
                     <li class="nav-item">
                         <a href="#" class="nav-link">
+                            <i class="nav-icon bi bi-clipboard-fill"></i>
+                            <p>
+                                Quản lý câu hỏi
+                                <i class="nav-arrow bi bi-chevron-right"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a th:href="@{/admin/faqs}" class="nav-link">
+                                    <i class="nav-icon bi bi-envelope"></i>
+                                    <p>Danh sách câu hỏi</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a th:href="@{/admin/faqs/add}" class="nav-link">
+                                    <i class="nav-icon bi bi-circle"></i>
+                                    <p>Thêm mới câu hỏi</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a th:href="@{/admin/contacts}" class="nav-link">
+                            <i class="nav-icon bi bi-envelope"></i>
+                            <p>Danh sách thư liên hệ</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
                             <i class="nav-icon bi bi-person-fill"></i>
                             <p>
                                 Quản lý người dùng

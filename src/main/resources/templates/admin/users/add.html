@@ -9,7 +9,7 @@
         <div class="app-content-header">
             <div class="row">
                 <div class="col-sm-6">
-                    <h3 class="mb-0">Thêm sự kiện</h3>
+                    <h3 class="mb-0">Thêm người dùng</h3>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-end">
@@ -17,7 +17,7 @@
                             <a href="/admin/dashboard">Home</a>
                         </li>
                         <li class="breadcrumb-item active">
-                            Thêm sự kiện
+                            Thêm người dùng
                         </li>
                     </ol>
                 </div>
@@ -26,59 +26,54 @@
 
         <div class="app-content">
 
-            <form th:action="@{/admin/events/add}"
-                  th:object="${event}"
+            <form th:action="@{/admin/users/add}"
+                  th:object="${user}"
                   method="post">
 
                 <div class="mb-3">
-                    <label>Tên sự kiện</label>
+                    <label>Username</label>
+
                     <input type="text"
-                           th:field="*{name}"
-                           class="form-control">
-                    <div class="text-danger"
-                         th:errors="*{name}">
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <label>Hệ số giá</label>
-                    <input type="number"
-                           step="0.01"
-                           min="0"
-                           th:field="*{priceMultiplier}"
+                           th:field="*{username}"
                            class="form-control">
                 </div>
 
                 <div class="mb-3">
-                    <label>Ngày bắt đầu</label>
-                    <input type="date"
-                           th:field="*{startDate}"
+                    <label>Email</label>
+
+                    <input type="email"
+                           th:field="*{email}"
                            class="form-control">
                 </div>
 
                 <div class="mb-3">
-                    <label>Ngày kết thúc</label>
-                    <input type="date"
-                           th:field="*{endDate}"
+                    <label>Password</label>
+
+                    <input type="password"
+                           th:field="*{password}"
                            class="form-control">
-                    <div class="text-danger"
-                         th:errors="*{endDate}">
-                    </div>
                 </div>
 
-                <div class="form-check mb-3">
-                    <input type="checkbox"
-                           th:field="*{active}"
-                           class="form-check-input">
+                <div class="mb-3">
+                    <label>Role</label>
 
-                    <label class="form-check-label">
-                        Kích hoạt
-                    </label>
+                    <select th:field="*{role}"
+                            class="form-select">
+
+                        <option value="ROLE_USER">
+                            User
+                        </option>
+
+                        <option value="ROLE_ADMIN">
+                            Admin
+                        </option>
+
+                    </select>
                 </div>
 
                 <div class="text-end">
 
-                    <a th:href="@{/admin/events}" class="btn btn-secondary">
+                    <a th:href="@{/admin/users}" class="btn btn-secondary">
                         Quay lại
                     </a>
 

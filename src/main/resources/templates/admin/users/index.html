@@ -9,7 +9,7 @@
         <div class="app-content-header">
             <div class="row">
                 <div class="col-sm-6">
-                    <h3 class="mb-0">Danh sách sự kiện</h3>
+                    <h3 class="mb-0">Danh sách người dùng</h3>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-end">
@@ -17,24 +17,24 @@
                             <a href="/admin/dashboard">Home</a>
                         </li>
                         <li class="breadcrumb-item active">
-                            Danh sách sự kiện
+                            Danh sách người dùng
                         </li>
                     </ol>
                 </div>
             </div>
 
             <div class="d-flex justify-content-between mt-3">
-                <a th:href="@{/admin/events/add}"
+                <a th:href="@{/admin/users/add}"
                    class="btn btn-primary">
-                    + Thêm sự kiện
+                    + Thêm mới người dùng
                 </a>
 
                 <div class="col-md-3">
-                    <form th:action="@{/admin/events}" method="GET">
+                    <form th:action="@{/admin/users}" method="GET">
                         <div class="input-group">
                             <input type="text" class="form-control" name="keyword" th:value="${keyword}" placeholder="Nhập thông tin cần tìm...">
                             <button type="submit" class="btn btn-secondary"><i class="bi bi-search"></i> Tìm kiếm</button>
-                            <a th:if="${keyword != null && !keyword.isEmpty()}" th:href="@{/admin/events}" class="btn btn-outline-danger">Xóa lọc</a>
+                            <a th:if="${keyword != null && !keyword.isEmpty()}" th:href="@{/admin/users}" class="btn btn-outline-danger">Xóa lọc</a>
                         </div>
                     </form>
                 </div>
@@ -47,85 +47,64 @@
                 <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Tên</th>
-                    <th>Hệ số giá</th>
-                    <th>Từ ngày</th>
-                    <th>Đến ngày</th>
-                    <th>Trạng thái</th>
-                    <th>Hành động</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th width="150">Thao tác</th>
                 </tr>
                 </thead>
 
                 <tbody>
 
-                <tr th:if="${eventPage.empty}">
-                    <td colspan="7" class="text-center">
+                <tr th:if="${users.empty}">
+                    <td colspan="5" class="text-center">
                         Chưa có dữ liệu
                     </td>
                 </tr>
 
-                <tr th:each="event : ${eventPage.content}">
-                    <td th:text="${event.id}"></td>
-
-                    <td th:text="${event.name}"></td>
-
-                    <td th:text="${event.priceMultiplier}"></td>
-
-                    <td th:text="${#temporals.format(event.startDate,'dd/MM/yyyy')}"></td>
-
-                    <td th:text="${#temporals.format(event.endDate,'dd/MM/yyyy')}"></td>
+                <tr th:each="user : ${users}">
+                    <td th:text="${user.id}"></td>
+                    <td th:text="${user.username}"></td>
+                    <td th:text="${user.email}"></td>
+                    <td th:text="${user.role}"></td>
 
                     <td>
-            <span th:if="${event.active}"
-                  class="badge bg-success">
-                Hoạt động
-            </span>
-
-                        <span th:unless="${event.active}"
-                              class="badge bg-danger">
-                Tắt
-            </span>
-                    </td>
-
-                    <td>
-
-                        <a th:href="@{/admin/events/edit/{id}(id=${event.id})}"
+                        <a th:href="@{/admin/users/edit/{id}(id=${user.id})}"
                            class="btn btn-warning btn-sm">
                             Sửa
                         </a>
 
-                        <form th:action="@{/admin/events/delete/{id}(id=${event.id})}"
+                        <form th:action="@{/admin/users/delete/{id}(id=${user.id})}"
                               method="post"
-                              style="display:inline">
+                              class="d-inline">
 
                             <button class="btn btn-danger btn-sm"
-                                    onclick="return confirm('Xóa sự kiện?')">
+                                    onclick="return confirm('Xóa user này?')">
                                 Xóa
                             </button>
 
                         </form>
-
                     </td>
                 </tr>
 
                 </tbody>
             </table>
 
-            <nav class="mt-3" th:if="${eventPage.totalPages > 0}">
+            <nav class="mt-3" th:if="${users.totalPages > 0}">
                 <ul class="pagination">
 
                     <li class="page-item"
-                        th:classappend="${eventPage.first} ? 'disabled'">
+                        th:classappend="${users.first} ? 'disabled'">
 
                         <a class="page-link"
-                           th:href="@{/admin/room-blocks(page=${eventPage.number - 1})}">
+                           th:href="@{/admin/room-blocks(page=${users.number - 1})}">
                             Trước
                         </a>
                     </li>
 
                     <li class="page-item"
-                        th:each="i : ${#numbers.sequence(0, eventPage.totalPages - 1)}"
-                        th:classappend="${i == eventPage.number} ? 'active'">
+                        th:each="i : ${#numbers.sequence(0, users.totalPages - 1)}"
+                        th:classappend="${i == users.number} ? 'active'">
 
                         <a class="page-link"
                            th:text="${i + 1}"
@@ -135,10 +114,10 @@
                     </li>
 
                     <li class="page-item"
-                        th:classappend="${eventPage.last} ? 'disabled'">
+                        th:classappend="${users.last} ? 'disabled'">
 
                         <a class="page-link"
-                           th:href="@{/admin/room-blocks(page=${eventPage.number + 1})}">
+                           th:href="@{/admin/room-blocks(page=${users.number + 1})}">
                             Sau
                         </a>
 

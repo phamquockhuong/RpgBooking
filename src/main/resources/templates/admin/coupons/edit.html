@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/admin-layout :: layout(~{:: #content})}">
+<body>
+
+<div id="content">
+
+    <div class="container-fluid">
+
+        <div class="app-content-header">
+            <div class="row">
+                <div class="col-sm-6">
+                    <h3 class="mb-0">Chỉnh sửa mã giảm giá</h3>
+                </div>
+
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-end">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Chỉnh sửa mã giảm giá</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <div class="app-content">
+
+            <form th:action="@{/admin/coupons/edit/{id}(id=${coupon.id})}"
+                  th:object="${coupon}"
+                  method="post">
+
+                <input type="hidden"
+                       th:field="*{id}">
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            Mã Coupon
+                        </label>
+
+                        <input type="text"
+                               th:field="*{code}"
+                               class="form-control"
+                               required>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            Loại giảm giá
+                        </label>
+
+                        <select th:field="*{discountType}"
+                                class="form-select">
+
+                            <option value="PERCENT">
+                                Phần trăm (%)
+                            </option>
+
+                            <option value="FIXED">
+                                Giảm cố định
+                            </option>
+
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            Giá trị giảm
+                        </label>
+
+                        <input type="number"
+                               step="0.01"
+                               min="0"
+                               th:field="*{discountValue}"
+                               class="form-control"
+                               required>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            Số lượng
+                        </label>
+
+                        <input type="number"
+                               min="1"
+                               th:field="*{quantity}"
+                               class="form-control"
+                               required>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            Ngày bắt đầu
+                        </label>
+
+                        <input type="datetime-local"
+                               th:field="*{startDate}"
+                               class="form-control"
+                               required>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            Ngày kết thúc
+                        </label>
+
+                        <input type="datetime-local"
+                               th:field="*{endDate}"
+                               class="form-control"
+                               required>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            Người sở hữu
+                        </label>
+
+                        <select th:field="*{user.id}"
+                                class="form-select">
+
+                            <option value="">
+                                Công khai cho mọi người
+                            </option>
+
+                            <option th:each="u : ${users}"
+                                    th:value="${u.id}"
+                                    th:text="${u.username}">
+                            </option>
+
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <div class="form-check mt-4">
+
+                            <input type="checkbox"
+                                   th:field="*{active}"
+                                   class="form-check-input">
+
+                            <label class="form-check-label">
+                                Kích hoạt
+                            </label>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="text-end">
+
+                    <a th:href="@{/admin/coupons}"
+                       class="btn btn-secondary">
+                        Quay lại
+                    </a>
+
+                    <button type="submit"
+                            class="btn btn-warning">
+                        Cập nhật
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

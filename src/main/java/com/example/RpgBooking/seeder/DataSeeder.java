@@ -1,11 +1,13 @@
 package com.example.RpgBooking.seeder;
 
 import com.example.RpgBooking.model.Category;
+import com.example.RpgBooking.model.Faq;
 import com.example.RpgBooking.model.Room;
 import com.example.RpgBooking.model.User;
 import com.example.RpgBooking.repository.CategoryRepository;
 import com.example.RpgBooking.repository.RoomRepository;
 import com.example.RpgBooking.repository.UserRepository;
+import com.example.RpgBooking.repository.FaqRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -20,15 +22,18 @@ public class DataSeeder implements CommandLineRunner {
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final FaqRepository faqRepository;
 
     public DataSeeder(CategoryRepository categoryRepository,
                       RoomRepository roomRepository,
                       UserRepository userRepository,
+                      FaqRepository faqRepository,
                       PasswordEncoder passwordEncoder) {
         this.categoryRepository = categoryRepository;
         this.roomRepository = roomRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.faqRepository = faqRepository;
     }
 
     @Override
@@ -212,6 +217,55 @@ public class DataSeeder implements CommandLineRunner {
         roomRepository.saveAll(Arrays.asList(
                 room1, room2, room3, room4,
                 room5, room6, room7, room8
+        ));
+
+        if (faqRepository.count() > 0) {
+            return;
+        }
+
+        Faq faq1 = new Faq();
+        faq1.setQuestion("Độ tuổi nào phù hợp để tham gia?");
+        faq1.setAnswer("Người chơi dưới 16 tuổi cần có người giám hộ đi kèm. Trò chơi đòi hỏi khả năng tư duy logic nên khuyến khích người chơi từ 12 tuổi trở lên.");
+        faq1.setLevel(1);
+        faq1.setActive(true);
+
+        Faq faq2 = new Faq();
+        faq2.setQuestion("Tôi cần chuẩn bị gì trước khi đến?");
+        faq2.setAnswer("Bạn nên có mặt trước giờ bắt đầu 15 phút để được nghe hướng dẫn và gửi đồ cá nhân vào tủ bảo quản.");
+        faq2.setLevel(2);
+        faq2.setActive(true);
+
+        Faq faq3 = new Faq();
+        faq3.setQuestion("Làm sao để tôi thay đổi lịch đã đặt?");
+        faq3.setAnswer("Bạn có thể thay đổi lịch trước ít nhất 24 giờ. Vui lòng liên hệ hotline hoặc email để được hỗ trợ.");
+        faq3.setLevel(3);
+        faq3.setActive(true);
+
+        Faq faq4 = new Faq();
+        faq4.setQuestion("Phương thức thanh toán nào được chấp nhận?");
+        faq4.setAnswer("Chúng tôi chấp nhận chuyển khoản ngân hàng, Momo, VNPay hoặc thanh toán trực tiếp tại quầy.");
+        faq4.setLevel(4);
+        faq4.setActive(true);
+
+        Faq faq5 = new Faq();
+        faq5.setQuestion("Trò chơi có quá đáng sợ hoặc gây ngột ngạt không?");
+        faq5.setAnswer("Các phòng đều được trang bị hệ thống thông gió và nút khẩn cấp để đảm bảo an toàn cho người chơi.");
+        faq5.setLevel(5);
+        faq5.setActive(true);
+
+        Faq faq6 = new Faq();
+        faq6.setQuestion("Tôi có thể chơi ghép cùng nhóm khác không?");
+        faq6.setAnswer("Một số sự kiện đặc biệt hỗ trợ ghép nhóm theo yêu cầu. Vui lòng liên hệ để được tư vấn.");
+        faq6.setLevel(6);
+        faq6.setActive(true);
+
+        faqRepository.saveAll(Arrays.asList(
+                faq1,
+                faq2,
+                faq3,
+                faq4,
+                faq5,
+                faq6
         ));
 
         System.out.println("Khởi tạo dữ liệu mẫu thành công!");
