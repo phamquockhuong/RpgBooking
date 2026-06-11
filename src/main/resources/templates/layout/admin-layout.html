@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:fragment="layout(content)">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" th:fragment="layout(content)">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>RPG Manager | Dashboard</title>
@@ -103,12 +103,15 @@
                 <li class="nav-item dropdown user-menu">
                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
                         <img src="/images/avatar5.png" class="user-image rounded-circle shadow" alt="User Image">
-                        <span class="d-none d-md-inline">Alexander Pierce</span>
+                        <span class="d-none d-md-inline" sec:authentication="name">Username</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-2">
-                        <li class="user-footer d-grid gap-2">
-                            <a href="#" class="btn btn-outline-secondary w-100">Profile</a>
-                            <a href="#" class="btn btn-outline-danger w-100">Sign out</a>
+                        <li><a class="dropdown-item" href="/profile">Thông tin cá nhân</a></li>
+                        <li><a class="dropdown-item" href="/my-bookings">Lịch sử đặt phòng</a></li>
+                        <li>
+                            <form th:action="@{/logout}" method="post">
+                                <button type="submit" class="dropdown-item text-danger">Đăng xuất</button>
+                            </form>
                         </li>
                     </ul>
                 </li>
@@ -196,13 +199,13 @@
                         </a>
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
-                                <a th:href="@{/admin/rooms}" class="nav-link">
+                                <a th:href="@{/admin/room-blocks}" class="nav-link">
                                     <i class="nav-icon bi bi-circle"></i>
                                     <p>Danh sách chặn phòng</p>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a th:href="@{/admin/rooms/add}" class="nav-link">
+                                <a th:href="@{/admin/room-blocks/add}" class="nav-link">
                                     <i class="nav-icon bi bi-circle"></i>
                                     <p>Thêm mới chặn phòng</p>
                                 </a>

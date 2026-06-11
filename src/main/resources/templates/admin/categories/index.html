@@ -41,6 +41,11 @@
                 </tr>
                 </thead>
                 <tbody>
+                <tr th:if="${categories.empty}">
+                    <td colspan="8" class="text-center">
+                        Chưa có dữ liệu
+                    </td>
+                </tr>
                 <tr th:each="cat : ${categories}">
                     <td th:text="${cat.id}"></td>
                     <td th:text="${cat.name}"></td>
@@ -55,7 +60,7 @@
                 </tbody>
             </table>
 
-            <nav class="mt-3">
+            <nav class="mt-3" th:if="${categories.totalPages > 0}">
                 <ul class="pagination">
                     <li class="page-item" th:classappend="${categories.first} ? 'disabled'">
                         <a class="page-link" th:href="@{/admin/rooms(page=${categories.number - 1})}">Trước</a>

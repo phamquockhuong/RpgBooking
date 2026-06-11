@@ -11,4 +11,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             LocalDate date1,
             LocalDate date2
     );
+
+    long count();
 }

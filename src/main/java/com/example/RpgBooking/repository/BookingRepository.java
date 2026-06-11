@@ -1,5 +1,6 @@
 package com.example.RpgBooking.repository;
 
+import com.example.RpgBooking.dto.TopRoomDTO;
 import com.example.RpgBooking.model.Booking;
 import com.example.RpgBooking.model.BookingStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -42,4 +43,21 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findByRoomIdAndBookingDateAndStatus(Long roomId, LocalDate date, BookingStatus bookingStatus);
 
     List<Booking> findByStatusAndExpiresAtBefore(BookingStatus bookingStatus, LocalDateTime now);
+
+    @Query("""
+        SELECT new com.example.RpgBooking.dto.TopRoomDTO(
+            r.name,
+            COUNT(b.id),
+            COALESCE(SUM(b.totalPrice), 0)
+        )
+        FROM Booking b
+        JOIN b.room r
+        WHERE b.bookingDate >= :fromDate
+        AND b.status = com.example.RpgBooking.model.BookingStatus.CONFIRMED
+        GROUP BY r.id, r.name
+        ORDER BY COUNT(b.id) DESC
+    """)
+    List<TopRoomDTO> findTopRooms(LocalDate fromDate);
+
+    long count();
 }

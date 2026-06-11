@@ -42,6 +42,11 @@
                 </tr>
                 </thead>
                 <tbody>
+                <tr th:if="${bookings.empty}">
+                    <td colspan="8" class="text-center">
+                        Chưa có dữ liệu
+                    </td>
+                </tr>
                 <tr th:each="booking : ${bookings}">
                     <td th:text="${booking.id}"></td>
                     <td th:text="${booking.room != null ? booking.room.name : '-'}"></td>
@@ -60,7 +65,7 @@
                 </tbody>
             </table>
 
-            <nav class="mt-3">
+            <nav class="mt-3" th:if="${bookings.totalPages > 0}">
                 <ul class="pagination">
                     <li class="page-item" th:classappend="${bookings.first} ? 'disabled'">
                         <a class="page-link" th:href="@{/admin/rooms(page=${bookings.number - 1})}">Trước</a>

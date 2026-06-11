@@ -23,4 +23,17 @@ public interface RoomBlockRepository extends JpaRepository<RoomBlock, Long> {
             @Param("startDateTime") LocalDateTime startDateTime,
             @Param("endDateTime") LocalDateTime endDateTime
     );
+
+    boolean existsByRoomIdAndStartTimeAndEndTime(
+            Long roomId,
+            LocalDateTime startTime,
+            LocalDateTime endTime
+    );
+
+    boolean existsByRoomIdAndStartTimeAndEndTimeAndIdNot(
+            Long roomId,
+            LocalDateTime startTime,
+            LocalDateTime endTime,
+            Long id
+    );
 }

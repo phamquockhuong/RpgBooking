@@ -40,6 +40,11 @@
                 </tr>
                 </thead>
                 <tbody>
+                <tr th:if="${roomPage.empty}">
+                    <td colspan="8" class="text-center">
+                        Chưa có dữ liệu
+                    </td>
+                </tr>
                 <tr th:each="r : ${roomPage.content}">
                     <td th:text="${r.id}"></td>
                     <td th:text="${r.name}"></td>
@@ -70,7 +75,7 @@
                 </tbody>
             </table>
 
-            <nav class="mt-3">
+            <nav class="mt-3" th:if="${roomPage.totalPages > 0}">
                 <ul class="pagination">
                     <li class="page-item" th:classappend="${roomPage.first} ? 'disabled'">
                         <a class="page-link" th:href="@{/admin/rooms(page=${roomPage.number - 1})}">Trước</a>

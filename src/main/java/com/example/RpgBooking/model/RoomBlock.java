@@ -33,11 +33,7 @@ public class RoomBlock {
     @Column(name = "end_time", nullable = false)
     private LocalDateTime endTime;
 
-    @Column(name = "start_date", nullable = false)
-    private LocalDate startDate;
-
-    @Column(name = "end_date", nullable = false)
-    private LocalDate endDate;
-
     private String reason;
+
+    private boolean active = true;
 }
