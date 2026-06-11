@@ -18,8 +18,12 @@
                 <ul class="list-unstyled">
                     <li>👥 <strong th:text="${room.minPlayers} + ' - ' + ${room.maxPlayers}"></strong> người</li>
                     <li>⏱️ <strong th:text="${room.duration}"></strong> phút</li>
-                    <li>💰 Giá người lớn: <strong th:text="${room.priceAdult}"></strong></li>
-                    <li>🧒 Giá trẻ em: <strong th:text="${room.priceKid}"></strong></li>
+                    <li>💰 Giá người lớn:
+                        <strong th:text="${#numbers.formatInteger(room.priceAdult, 0, 'COMMA')} + ' ₫'"></strong>
+                    </li>
+                    <li>🧒 Giá trẻ em:
+                        <strong th:text="${#numbers.formatInteger(room.priceKid, 0, 'COMMA')} + ' ₫'"></strong>
+                    </li>
                 </ul>
             </div>
         </div>

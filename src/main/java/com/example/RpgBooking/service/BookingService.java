@@ -5,6 +5,7 @@ import com.example.RpgBooking.dto.PaymentSummary;
 import com.example.RpgBooking.exception.BookingConflictException;
 import com.example.RpgBooking.model.*;
 import com.example.RpgBooking.repository.BookingRepository;
+import com.example.RpgBooking.repository.RoomBlockRepository;
 import com.example.RpgBooking.repository.RoomRepository;
 import com.example.RpgBooking.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,6 +36,7 @@ public class BookingService {
     private final BookingRepository bookingRepository;
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
+    private final RoomBlockRepository roomBlockRepository;
     private final CouponService couponService;
 
     public List<Booking> getAll() {
@@ -46,7 +48,7 @@ public class BookingService {
                                         HttpServletRequest request) {
 
         Room room = roomRepository.findById(req.getRoomId())
-                .orElseThrow(() -> new RuntimeException("Room not found"));
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy trò chơi"));
 
 
         LocalTime startTime = LocalTime.parse(req.getStartTime());
@@ -54,8 +56,20 @@ public class BookingService {
         int totalPlayers = req.getNumAdult() + req.getNumKid();
 
         LocalDate bookingDate = req.getBookingDate();
-
         LocalDate today = LocalDate.now();
+
+        LocalDateTime startDateTime = LocalDateTime.of(req.getBookingDate(), startTime);
+        LocalDateTime endDateTime = LocalDateTime.of(req.getBookingDate(), endTime);
+
+        boolean blocked = roomBlockRepository.existsConflictBlock(
+                room.getId(),
+                startDateTime,
+                endDateTime
+        );
+
+        if (blocked) {
+            throw new RuntimeException("Phòng đã bị khóa trong khoảng thời gian này");
+        }
 
         if (bookingDate.isBefore(today)) {
             throw new RuntimeException("Không thể đặt ngày trong quá khứ");
@@ -84,11 +98,11 @@ public class BookingService {
         User user;
         if (principal != null) {
             user = userRepository.findByEmail(principal.getUsername())
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+                    .orElseThrow(() -> new RuntimeException("Không thấy người dùng này"));
         } else {
             String email = req.getEmail();
             if (email == null || email.isEmpty()) {
-                throw new RuntimeException("Email is required for guest booking");
+                throw new RuntimeException("Email là bắt buộc cho booking");
             }
 
             user = userRepository.findByEmail(email).orElse(null);
@@ -152,7 +166,7 @@ public class BookingService {
         );
 
         if (isBooked) {
-            throw new BookingConflictException("Time slot already booked");
+            throw new BookingConflictException("Trò chơi này đã bị bảo trì");
         }
 
         Booking booking = new Booking();
