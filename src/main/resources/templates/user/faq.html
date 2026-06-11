@@ -4,54 +4,113 @@
 
 <body>
 
-<div id="boxFAQ">
+<div id="boxFAQ" class="py-5">
 
-    <h2 class="text-center my-5 fw-bold">
-        Câu hỏi thường gặp
-    </h2>
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-gradient display-5 mb-2">
+            <i class="bi bi-patch-question text-info me-2"></i>Câu Hỏi Thường Gặp
+        </h2>
+        <p class="text-white" style="font-size: 18px">Mọi thắc mắc của bạn đều có lời giải đáp tại đây</p>
+        <div class="custom-underline mx-auto"></div>
+    </div>
 
-    <div class="accordion accordion-flush rounded"
-         id="faqAccordion">
+    <div class="container" style="max-width: 850px;">
 
-        <div class="accordion-item bg-custom-card border-secondary"
-             th:each="faq, stat : ${faqs}">
+        <div class="accordion" id="faqAccordion">
 
-            <h2 class="accordion-header">
+            <div class="accordion-item custom-faq-item mb-3 border-0 rounded-4 overflow-hidden"
+                 th:each="faq, stat : ${faqs}">
 
-                <button class="accordion-button bg-custom-card text-white"
-                        th:classappend="${!stat.first} ? ' collapsed'"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        th:data-bs-target="'#faq-' + ${faq.id}">
+                <h2 class="accordion-header">
+                    <button class="accordion-button bg-custom-card text-white fw-semibold py-3 px-4"
+                            th:classappend="${!stat.first} ? ' collapsed'"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            th:data-bs-target="'#faq-' + ${faq.id}">
 
-                    <span th:text="${faq.question}">
-                        Câu hỏi
-                    </span>
+                        <span class="badge bg-info-subtle text-info me-3 px-2.5 py-1.5 rounded-3">Q</span>
+                        <span th:text="${faq.question}">Câu hỏi mẫu?</span>
 
-                </button>
+                    </button>
+                </h2>
 
-            </h2>
+                <div class="accordion-collapse collapse"
+                     th:id="'faq-' + ${faq.id}"
+                     th:classappend="${stat.first} ? ' show'"
+                     data-bs-parent="#faqAccordion">
 
-            <div class="accordion-collapse collapse"
-                 th:id="'faq-' + ${faq.id}"
-                 th:classappend="${stat.first} ? ' show'"
-                 data-bs-parent="#faqAccordion">
+                    <div class="accordion-body text-light-muted bg-custom-body-faq px-4 py-4 border-top border-secondary-subtle">
+                        <div class="d-flex">
+                            <span class="badge bg-success-subtle text-success me-3 px-2.5 py-1.5 rounded-3 h-100">A</span>
+                            <div class="w-100 lh-lg" th:utext="${faq.answer}">
+                                Câu trả lời mẫu...
+                            </div>
+                        </div>
+                    </div>
 
-                <div class="accordion-body text-white"
-                     th:utext="${faq.answer}">
                 </div>
 
             </div>
 
-        </div>
+            <div th:if="${#lists.isEmpty(faqs)}"
+                 class="card bg-custom-card border-secondary text-center p-5 rounded-4">
+                <div class="card-body">
+                    <i class="bi bi-chat-left-dots text-muted display-4 mb-3 d-block"></i>
+                    <h5 class="text-white mb-2">Chưa có câu hỏi thường gặp nào</h5>
+                    <p class="text-muted mb-0">Hệ thống đang cập nhật dữ liệu, vui lòng quay lại sau.</p>
+                </div>
+            </div>
 
-        <div th:if="${#lists.isEmpty(faqs)}"
-             class="alert alert-info text-center">
-            Chưa có câu hỏi thường gặp.
         </div>
-
     </div>
 
+    <style>
+        .text-gradient {
+            background: white;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .custom-underline {
+            width: 60px;
+            height: 4px;
+            background: #0dcaf0;
+            border-radius: 2px;
+        }
+
+        .custom-faq-item {
+            background-color: var(--bs-card-bg, #1e1e2f) !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .custom-faq-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(13, 202, 240, 0.15);
+        }
+
+        .accordion-button:not(.collapsed) {
+            background-color: rgba(13, 202, 240, 0.08) !important;
+            color: #0dcaf0 !important;
+            box-shadow: none;
+        }
+
+        .accordion-button:not(.collapsed)::after {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%230dcaf0'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e") !important;
+        }
+
+        .accordion-button::after {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ffffff'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e") !important;
+        }
+
+        .bg-custom-body-faq {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        .text-light-muted {
+            color: #d1d1e9;
+        }
+    </style>
 </div>
 
 </body>
