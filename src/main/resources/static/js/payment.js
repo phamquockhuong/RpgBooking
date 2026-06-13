@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 alert(data.message);
                 return;
             }
-
+                console.log(data)
             document.getElementById("price").innerText = formatVND(data.price);
 
             document.getElementById("tax").innerText = formatVND(data.tax);
@@ -46,21 +46,3 @@ document.addEventListener("DOMContentLoaded", function () {
 function formatVND(amount) {
     return new Intl.NumberFormat('vi-VN').format(amount) + ' ₫';
 }
-
-document.getElementById("price").innerText =
-    formatVND(data.price);
-
-document.getElementById("tax").innerText =
-    formatVND(data.tax);
-
-document.getElementById("discount").innerText =
-    formatVND(data.discount);
-
-document.getElementById("total").innerText =
-    formatVND(data.total);
-
-document.getElementById("priceKid").innerText =
-    formatVND(data.discount);
-
-document.getElementById("priceAdult").innerText =
-    formatVND(data.total);

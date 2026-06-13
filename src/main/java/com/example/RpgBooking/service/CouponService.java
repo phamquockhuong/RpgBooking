@@ -110,7 +110,7 @@ public class CouponService {
                         (price + gst)
                                 * coupon.getDiscountValue() / 100;
 
-            } else if ("AMOUNT".equals(coupon.getDiscountType())) {
+            } else if ("FIXED".equals(coupon.getDiscountType())) {
 
                 discount = coupon.getDiscountValue();
             }

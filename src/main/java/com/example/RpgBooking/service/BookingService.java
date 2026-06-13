@@ -11,6 +11,8 @@ import com.example.RpgBooking.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -97,8 +99,9 @@ public class BookingService {
 
         User user;
         if (principal != null) {
-            user = userRepository.findByEmail(principal.getUsername())
-                    .orElseThrow(() -> new RuntimeException("Không thấy người dùng này"));
+            user = userRepository.findByUsername(principal.getUsername())
+                    .orElseGet(() -> userRepository.findByEmail(principal.getUsername())
+                            .orElseThrow(() -> new RuntimeException("Không thấy người dùng này trong hệ thống")));
         } else {
             String email = req.getEmail();
             if (email == null || email.isEmpty()) {
@@ -272,5 +275,9 @@ public class BookingService {
         );
 
         mailSender.send(message);
+    }
+
+    public Page<Booking> findByUsername(String username, Pageable pageable) {
+        return bookingRepository.findByUser_Username(username, pageable);
     }
 }

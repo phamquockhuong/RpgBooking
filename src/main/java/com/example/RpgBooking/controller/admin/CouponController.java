@@ -1,12 +1,14 @@
 package com.example.RpgBooking.controller.admin;
 
 import com.example.RpgBooking.model.Coupon;
+import com.example.RpgBooking.model.User;
 import com.example.RpgBooking.repository.CouponRepository;
 import com.example.RpgBooking.repository.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -58,7 +60,8 @@ public class CouponController {
     public String saveAdd(
             @Valid @ModelAttribute Coupon coupon,
             BindingResult result,
-            Model model
+            Model model,
+            @RequestParam(value = "user.id", required = false) Long userId
     ) {
 
         if (couponRepo.existsByCode(coupon.getCode())) {
@@ -80,6 +83,14 @@ public class CouponController {
         if (result.hasErrors()) {
             model.addAttribute("users", userRepo.findAll());
             return "admin/coupons/add";
+        }
+
+        if (userId != null) {
+            User user = userRepo.findById(userId)
+                    .orElseThrow(() -> new IllegalArgumentException("User không tồn tại"));
+            coupon.setUser(user);
+        } else {
+            coupon.setUser(null);
         }
 
         couponRepo.save(coupon);
@@ -107,7 +118,8 @@ public class CouponController {
             @PathVariable Long id,
             @Valid @ModelAttribute Coupon coupon,
             BindingResult result,
-            Model model
+            Model model,
+            @RequestParam(value = "user.id", required = false) Long userId
     ) {
 
         Coupon existing = couponRepo.findById(id)
@@ -137,6 +149,14 @@ public class CouponController {
         }
 
         coupon.setId(id);
+
+        if (userId != null) {
+            User user = userRepo.findById(userId)
+                    .orElseThrow(() -> new IllegalArgumentException("User không tồn tại"));
+            coupon.setUser(user);
+        } else {
+            coupon.setUser(null);
+        }
 
         couponRepo.save(coupon);
 

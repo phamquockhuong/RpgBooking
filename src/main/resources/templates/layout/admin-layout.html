@@ -106,8 +106,8 @@
                         <span class="d-none d-md-inline" sec:authentication="name">Username</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-2">
-                        <li><a class="dropdown-item" href="/profile">Thông tin cá nhân</a></li>
-                        <li><a class="dropdown-item" href="/my-bookings">Lịch sử đặt phòng</a></li>
+                        <li><a class="dropdown-item" th:href="@{/profile}">Thông tin cá nhân</a></li>
+                        <li><a class="dropdown-item" th:href="@{/}">Trang người dùng</a></li>
                         <li>
                             <form th:action="@{/logout}" method="post">
                                 <button type="submit" class="dropdown-item text-danger">Đăng xuất</button>
@@ -455,6 +455,8 @@
     })();
 </script>
 <!--end::Color Mode Toggle-->
+
+<th:block th:replace="~{::page-scripts} ?: _"></th:block>
 </body>
 <!--end::Body-->
 </html>

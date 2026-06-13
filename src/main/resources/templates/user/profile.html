@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/user-layout :: layout(~{:: #boxProfile})}">
+
+<body>
+
+<div id="boxProfile" class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white"><b>Thông tin tài khoản</b></div>
+                <div class="card-body">
+                    <p><strong>Username:</strong> <span th:text="${user.username}"></span></p>
+                    <p><strong>Email:</strong> <span th:text="${user.email}"></span></p>
+                    <p class="text-muted small">Tài khoản này dùng để đặt phòng và nhận thông báo.</p>
+                </div>
+            </div>
+
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark"><b>Đổi mật khẩu</b></div>
+                <div class="card-body">
+                    <form id="passForm" th:action="@{/profile/change-password}" method="post">
+                        <div class="mb-3">
+                            <input type="password" name="oldPassword" class="form-control" placeholder="Mật khẩu cũ" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="password" name="newPassword" id="newPass" class="form-control" placeholder="Mật khẩu mới" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="password" id="confirmPass" class="form-control" placeholder="Xác nhận mật khẩu mới" required>
+                        </div>
+                        <button type="submit" class="btn btn-warning w-100">Xác nhận đổi mật khẩu</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

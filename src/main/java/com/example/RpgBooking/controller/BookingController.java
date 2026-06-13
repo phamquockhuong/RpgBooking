@@ -11,7 +11,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -181,5 +183,23 @@ public class BookingController {
     @GetMapping("/booking/success")
     public String success() {
         return "user/booking-success";
+    }
+
+    @GetMapping("/my-bookings")
+    public String getMyBookings(
+            @AuthenticationPrincipal org.springframework.security.core.userdetails.User principal,
+            @RequestParam(defaultValue = "0") int page,
+            Model model) {
+
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
+        Pageable pageable = PageRequest.of(page, 5, Sort.by("bookingDate").descending());
+        Page<Booking> bookingPage = bookingService.findByUsername(principal.getUsername(), pageable);
+
+        model.addAttribute("bookingPage", bookingPage);
+        model.addAttribute("currentPage", page);
+        return "user/my-bookings";
     }
 }

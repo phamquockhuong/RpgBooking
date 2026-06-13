@@ -201,10 +201,10 @@
                             <span sec:authentication="name">Username</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end bg-dark border-secondary">
-                            <li><a class="dropdown-item text-white" href="/profile">Thông tin cá nhân</a></li>
-                            <li><a class="dropdown-item text-white" href="/my-bookings">Lịch sử đặt phòng</a></li>
+                            <li><a class="dropdown-item text-white" th:href="@{/profile}">Thông tin cá nhân</a></li>
+                            <li><a class="dropdown-item text-white" th:href="@{/my-bookings}">Lịch sử đặt phòng</a></li>
                             <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-                                <a class="dropdown-item text-white" href="/admin/dashboard">Trang quản trị</a>
+                                <a class="dropdown-item text-white" th:href="@{/admin/dashboard}">Trang quản trị</a>
                             </li>
                             <li><hr class="dropdown-divider"></li>
                             <li>

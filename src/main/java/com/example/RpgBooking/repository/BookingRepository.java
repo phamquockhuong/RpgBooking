@@ -67,4 +67,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "LOWER(b.user.email) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(b.room.name) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     Page<Booking> searchByText(@Param("keyword") String keyword, Pageable pageable);
+
+    Page<Booking> findByUser_Username(String username, Pageable pageable);
 }

@@ -1,6 +1,5 @@
 package com.example.RpgBooking.repository;
 
-import com.example.RpgBooking.model.Event;
 import com.example.RpgBooking.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
