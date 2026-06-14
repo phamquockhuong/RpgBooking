@@ -136,9 +136,9 @@ public class BookingService {
                 } catch (Exception e) {
                     System.err.println("Mail error: " + e.getMessage());
                 }
-            }
 
-            autoLogin(user, request);
+                autoLogin(user, request);
+            }
         }
 
         Optional<Booking> existingPendingBooking = bookingRepository
